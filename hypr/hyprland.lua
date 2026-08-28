@@ -55,7 +55,7 @@ local menu        = "hyprlauncher"
 --   hl.exec_cmd("waybar & hyprpaper & firefox")
 -- end)
 hl.on("hyprland.start", function ()
-    h1.exec_cmd("quickshell -p ~/.config/quickshell/shell.qml")
+    hl.exec_cmd("quickshell -p ~/.config/quickshell/shell.qml")
 end)
 
 -------------------------------
