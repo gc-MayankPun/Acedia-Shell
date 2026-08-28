@@ -1,6 +1,7 @@
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
+import QtQuick.Layouts
 
 import "../theme"
 
@@ -12,5 +13,21 @@ PanelWindow {
     implicitHeight: 40
     color: "transparent"
 
-    Workspaces {}
+    RowLayout {
+        anchors.fill: parent
+        anchors.leftMargin: Theme.spacingMedium
+        anchors.rightMargin: Theme.spacingMedium
+
+        Workspaces {}
+        
+        Item {
+            Layout.fillWidth: true
+        }
+
+        Battery {}
+
+        Separator {}
+
+        Clock {}
+    }
 }
