@@ -39,7 +39,7 @@ Rectangle {
                 color: isActive 
                     ? Theme.workspaceActive 
                     : mouse.containsMouse 
-                        ? Theme.workspaceOccupied
+                        ? Theme.workspaceHover
                         : "transparent"
 
                 Behavior on color {
@@ -64,7 +64,7 @@ Rectangle {
                     color: isActive
                         ? Theme.workspaceTextActive
                         : mouse.containsMouse 
-                            ? Theme.primary
+                            ? Theme.textHover
                             : (ws
                                 ? Theme.workspaceTextOccupied
                                 : Theme.workspaceTextEmpty)

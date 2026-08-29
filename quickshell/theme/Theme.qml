@@ -23,6 +23,7 @@ QtObject {
     // Workspace 
     readonly property color workspaceActive: "#2A2342"
     readonly property color workspaceOccupied: "#64748B"
+    readonly property color workspaceHover: '#000633'
     readonly property color workspaceEmpty: "#334155"
 
     readonly property color workspaceTextActive: "#C4B5FD"
@@ -41,6 +42,7 @@ QtObject {
     readonly property color text: "#E2E8F0"
     readonly property color textMuted: "#94A3B8"
     readonly property color textDisabled: "#475569"
+    readonly property color textHover: '#97cbff'
 
     // Borders / separators
     readonly property color border: "#252B36"
