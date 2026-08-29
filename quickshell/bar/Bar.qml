@@ -7,33 +7,31 @@ import "../theme"
 
 PanelWindow {
     id: root 
+    
     anchors.top: true
     anchors.left: true
     anchors.right: true
+    
     implicitHeight: 40
     color: "transparent"
 
-    RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: Theme.spacingMedium
-        anchors.rightMargin: Theme.spacingMedium
+    Item {
+        anchors.fill: parent         
 
-        Workspaces {}
-        
-        Item {
-            Layout.fillWidth: true
+        Workspaces {
+            anchors.left: parent.left
+            anchors.leftMargin: Theme.spacingMedium
+            anchors.verticalCenter: parent.verticalCenter
         }
 
-        Controls {}
-
-        Item {
-            Layout.fillWidth: true
+        Clock {
+            anchors.centerIn: parent
         }
 
-        Battery {}
-
-        Separator {}
-
-        Clock {}
+        Battery {
+            anchors.right: parent.right
+            anchors.rightMargin: Theme.spacingMedium
+            anchors.verticalCenter: parent.verticalCenter
+        }
     }
 }
