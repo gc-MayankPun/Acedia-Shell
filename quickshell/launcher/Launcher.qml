@@ -8,34 +8,55 @@ import "../theme"
 
 PanelWindow {
     id: launcher
+    focusable: true
+
+    property int emptyLauncherHeight: 60
+    property int maxLauncherHeight: 500
     property bool launcherOpen: false 
+    property var applications: []
+    property var filteredApplications: {
+        const query = searchBar.searchText.trim().toLowerCase()
 
-    property var applications: [
-        {
-            name: "Firefox",
-            icon: "󰈹",
-            command: "firefox"
-        },
-        {
-            name: "Kitty",
-            icon: "󰄛",
-            command: "kitty"
-        },
-        {
-            name: "VS Code",
-            icon: "󰨞",
-            command: "code"
-        },
-        {
-            name: "Thunar",
-            icon: "󰝰",
-            command: "thunar"
+        if (query === "")
+            return []
+
+        return applications.filter(function(app) {
+            return app.name.toLowerCase().includes(query)
+        })
+    }
+
+    Component.onCompleted: {
+        appLoader.running = true
+    }
+
+    Process {
+        id: appLoader
+
+        command: ["bash", "/home/riceuser/.config/quickshell/launcher/applications.sh"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    launcher.applications = JSON.parse(text)
+                    console.log("Loaded applications:", launcher.applications.length)
+                } catch (error) {
+                    console.log("JSON error:", error)
+                    console.log("Output:", text)
+                }
+            }
         }
-    ]
-
-    implicitWidth: 500
-    // implicitHeight: 400
-    implicitHeight: searchBar.height + Theme.spacingLarge + appList.implicitHeight + 10
+    }
+    
+    implicitWidth: 500 
+    implicitHeight: searchBar.searchText === ""
+        ? emptyLauncherHeight
+        : Math.min(
+            searchBar.height +
+            Theme.spacingLarge +
+            appList.implicitHeight +
+            20,
+            maxLauncherHeight
+        )
 
     color: "transparent" 
     visible: launcher.launcherOpen
@@ -45,7 +66,7 @@ PanelWindow {
 
         function toggle(): void {
             launcher.launcherOpen = !launcher.launcherOpen 
-            console.log("Launcher:", launcher.launcherOpen)
+            if(launcher.launcherOpen) searchBar.searchText = "" 
         }
     }
 
@@ -55,7 +76,7 @@ PanelWindow {
         command: ["sh", "-c", commandToRun]
 
         property string commandToRun: ""
-    }
+    } 
 
     Rectangle {
         anchors.fill: parent
@@ -93,7 +114,7 @@ PanelWindow {
 
 
                 Repeater {
-                    model: launcher.applications
+                    model: launcher.filteredApplications
 
                     AppDetails {
                         appName: modelData.name

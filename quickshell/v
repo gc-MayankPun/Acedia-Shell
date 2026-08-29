@@ -1,0 +1,20 @@
+{
+            name: "Firefox",
+            icon: "󰈹",
+            command: "firefox"
+        },
+        {
+            name: "Kitty",
+            icon: "󰄛",
+            command: "kitty"
+        },
+        {
+            name: "VS Code",
+            icon: "󰨞",
+            command: "code"
+        },
+        {
+            name: "Thunar",
+            icon: "󰝰",
+            command: "thunar"
+        }

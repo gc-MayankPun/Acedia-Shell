@@ -1,5 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Widgets
 
 import "../theme"
 
@@ -15,66 +17,43 @@ Item {
     Layout.fillWidth: true
     Layout.preferredHeight: 30
 
-    Rectangle { 
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: parent.top
-            bottom: parent.bottom
-
-            leftMargin: mouse.containsMouse ? 5 : 0
-            rightMargin: mouse.containsMouse ? 5 : 0
-        }
+    Rectangle {
+        anchors.fill: parent
 
         radius: 10
-        color: mouse.containsMouse ? Theme.surfaceAlt : "transparent" 
 
-        Behavior on color {
-            ColorAnimation {
-                duration: Animations.normal
-            }
-        }
+        color: mouse.containsMouse
+            ? Theme.surfaceAlt
+            : "transparent"
 
-        Behavior on anchors.leftMargin {
-            NumberAnimation {
-                duration: Animations.normal
-            }
-        }
+        // App icon
+        IconImage {
+            id: appIcon
 
-        Behavior on anchors.rightMargin {
-            NumberAnimation {
-                duration: Animations.normal
-            }
-        }
-
-        // App image
-        Text {
             anchors {
                 left: parent.left
                 leftMargin: 10
                 verticalCenter: parent.verticalCenter
             }
 
+            width: 20
+            height: 20
 
-            text: root.appIcon
-            color: Theme.text 
-
-            font {
-                family: Theme.fontFamily
-                pixelSize: 20
-            }
+            source: root.appIcon.startsWith("/")
+                ? root.appIcon
+                : Quickshell.iconPath(root.appIcon, true)
         }
 
         // App name
         Text {
-            anchors{
+            anchors {
                 left: parent.left
                 leftMargin: 35
                 verticalCenter: parent.verticalCenter
             }
-            
+
             text: root.appName
-            color: Theme.text 
+            color: Theme.text
 
             font {
                 family: Theme.fontFamily
@@ -85,6 +64,7 @@ Item {
 
     MouseArea {
         id: mouse
+
         anchors.fill: parent
 
         hoverEnabled: true
