@@ -10,8 +10,32 @@ PanelWindow {
     id: launcher
     property bool launcherOpen: false 
 
+    property var applications: [
+        {
+            name: "Firefox",
+            icon: "󰈹",
+            command: "firefox"
+        },
+        {
+            name: "Kitty",
+            icon: "󰄛",
+            command: "kitty"
+        },
+        {
+            name: "VS Code",
+            icon: "󰨞",
+            command: "code"
+        },
+        {
+            name: "Thunar",
+            icon: "󰝰",
+            command: "thunar"
+        }
+    ]
+
     implicitWidth: 500
-    implicitHeight: 400
+    // implicitHeight: 400
+    implicitHeight: searchBar.height + Theme.spacingLarge + appList.implicitHeight + 10
 
     color: "transparent" 
     visible: launcher.launcherOpen
@@ -23,6 +47,14 @@ PanelWindow {
             launcher.launcherOpen = !launcher.launcherOpen 
             console.log("Launcher:", launcher.launcherOpen)
         }
+    }
+
+    Process {
+        id: appProcess
+
+        command: ["sh", "-c", commandToRun]
+
+        property string commandToRun: ""
     }
 
     Rectangle {
@@ -46,7 +78,7 @@ PanelWindow {
                 right: parent.right
                 bottom: parent.bottom
 
-                margins: Theme.spacingLarge
+                margins: 10
             }
 
             contentWidth: width
@@ -57,13 +89,23 @@ PanelWindow {
             ColumnLayout {
                 id: appList
 
-                width: parent.width
-                spacing: Theme.spacingMedium 
+                width: parent.width 
+
 
                 Repeater {
-                    model: 9
+                    model: launcher.applications
 
-                    AppDetails {}
+                    AppDetails {
+                        appName: modelData.name
+                        appIcon: modelData.icon
+                        appCommand: modelData.command
+
+                        onLaunchRequested: command => {
+                            appProcess.commandToRun = command
+                            appProcess.running = true
+                            launcher.launcherOpen = false
+                        }
+                    }
                 }
             }
         }

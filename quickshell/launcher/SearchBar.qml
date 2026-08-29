@@ -12,7 +12,7 @@ Rectangle {
 
         leftMargin: Theme.spacingLarge
         rightMargin: Theme.spacingLarge
-        topMargin: 20
+        topMargin: 10
     }
 
     height: 40

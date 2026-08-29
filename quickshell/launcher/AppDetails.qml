@@ -4,33 +4,94 @@ import QtQuick.Layouts
 import "../theme"
 
 Item {
-    Layout.fillWidth: true
-    Layout.preferredHeight: 50
+    id: root
 
-    RowLayout {
-        anchors.fill: parent
-        spacing: Theme.spacingMedium
+    property string appName: ""
+    property string appIcon: ""
+    property string appCommand: ""
+
+    signal launchRequested(string command)
+
+    Layout.fillWidth: true
+    Layout.preferredHeight: 30
+
+    Rectangle { 
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+            bottom: parent.bottom
+
+            leftMargin: mouse.containsMouse ? 5 : 0
+            rightMargin: mouse.containsMouse ? 5 : 0
+        }
+
+        radius: 10
+        color: mouse.containsMouse ? Theme.surfaceAlt : "transparent" 
+
+        Behavior on color {
+            ColorAnimation {
+                duration: Animations.normal
+            }
+        }
+
+        Behavior on anchors.leftMargin {
+            NumberAnimation {
+                duration: Animations.normal
+            }
+        }
+
+        Behavior on anchors.rightMargin {
+            NumberAnimation {
+                duration: Animations.normal
+            }
+        }
 
         // App image
-        Rectangle {
-            Layout.preferredWidth: 40
-            Layout.preferredHeight: 40
+        Text {
+            anchors {
+                left: parent.left
+                leftMargin: 10
+                verticalCenter: parent.verticalCenter
+            }
 
-            radius: Theme.radiusMedium
-            color: "red"
+
+            text: root.appIcon
+            color: Theme.text 
+
+            font {
+                family: Theme.fontFamily
+                pixelSize: 20
+            }
         }
 
         // App name
         Text {
-            Layout.fillWidth: true
+            anchors{
+                left: parent.left
+                leftMargin: 35
+                verticalCenter: parent.verticalCenter
+            }
             
-            text: "Firefox"
-            color: Theme.text
+            text: root.appName
+            color: Theme.text 
 
             font {
                 family: Theme.fontFamily
                 pixelSize: Theme.fontSmall
             }
+        }
+    }
+
+    MouseArea {
+        id: mouse
+        anchors.fill: parent
+
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+
+        onClicked: {
+            root.launchRequested(root.appCommand)
         }
     }
 }
