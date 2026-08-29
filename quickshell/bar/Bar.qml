@@ -6,7 +6,7 @@ import QtQuick.Layouts
 import "../theme"
 
 PanelWindow {
-    id: root
+    id: root 
     anchors.top: true
     anchors.left: true
     anchors.right: true
@@ -20,6 +20,12 @@ PanelWindow {
 
         Workspaces {}
         
+        Item {
+            Layout.fillWidth: true
+        }
+
+        Controls {}
+
         Item {
             Layout.fillWidth: true
         }
