@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import "../theme"
 
 Rectangle {
-    id: root
     color: Theme.background
     radius: 10
 

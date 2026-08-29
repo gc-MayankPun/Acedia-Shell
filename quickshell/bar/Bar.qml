@@ -5,13 +5,11 @@ import QtQuick.Layouts
 
 import "../theme"
 
-PanelWindow {
-    id: root 
-    
+PanelWindow {    
     anchors.top: true
     anchors.left: true
     anchors.right: true
-    
+
     implicitHeight: 40
     color: "transparent"
 

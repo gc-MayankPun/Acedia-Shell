@@ -5,7 +5,7 @@ import QtQuick
 import "../theme"
 
 Item {
-    id: root
+    id: battery
 
     property int batteryLevel: 0
     property string batteryStatus: "Unknown"
@@ -27,8 +27,8 @@ Item {
                 if (!data) return
                 var parts = data.trim().split(/\s+/)
                 if (parts.length >= 2) {
-                    root.batteryLevel = parseInt(parts[0]) || 0
-                    root.batteryStatus = parts[1]
+                    battery.batteryLevel = parseInt(parts[0]) || 0
+                    battery.batteryStatus = parts[1]
                 }
             }
         }
@@ -48,10 +48,10 @@ Item {
  
     Text {
         id: batteryText
-        text: "󰁹 " + root.batteryLevel + "%"
-        color: root.batteryStatus === "Charging"
+        text: "󰁹 " + battery.batteryLevel + "%"
+        color: battery.batteryStatus === "Charging"
             ? Theme.batCharging
-            : root.batteryLevel < 10
+            : battery.batteryLevel < 10
                 ? Theme.batLow
                 : Theme.batDischarging
         font {

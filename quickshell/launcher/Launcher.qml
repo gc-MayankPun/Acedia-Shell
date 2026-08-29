@@ -6,21 +6,21 @@ import QtQuick
 import "../theme"
 
 PanelWindow {
-    id: root
+    id: launcher
     property bool launcherOpen: false 
 
     implicitWidth: 500
     implicitHeight: 400
 
     color: "transparent" 
-    visible: root.launcherOpen
+    visible: launcher.launcherOpen
 
     IpcHandler {
         target: "launcher"
 
         function toggle(): void {
-            root.launcherOpen = !root.launcherOpen 
-            console.log("Launcher:", root.launcherOpen)
+            launcher.launcherOpen = !launcher.launcherOpen 
+            console.log("Launcher:", launcher.launcherOpen)
         }
     }
 
