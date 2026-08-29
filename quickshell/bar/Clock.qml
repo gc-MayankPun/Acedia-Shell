@@ -7,40 +7,68 @@ import "../theme"
 Rectangle {
     id: capsule
 
-    width: clock.implicitWidth + 60
-    height: clock.implicitHeight + 10
+    property date currentTime: new Date()
+
+    width: content.implicitWidth + 30
+    height: content.implicitHeight + 10
 
     radius: Theme.radiusPill
     color: Theme.background
 
-    Text {
-        id: clock
+    Row {
+        id: content
 
         anchors.centerIn: parent
-        color: Theme.clock
+        spacing: 6
 
-        font {
-            family: Theme.fontFamily
-            pixelSize: Theme.fontSmall
-            bold: true
+        // Time
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            
+            text: Qt.formatDateTime(currentTime, "HH:mm")
+            color: Theme.clock
+
+            font {
+                family: Theme.fontFamily
+                pixelSize: Theme.fontSmall
+                bold: true
+            }
         }
 
-        text: Qt.formatDateTime(
-            new Date(),
-            "hh:mm AP"
-        )
+        // Day
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
 
-        Timer {
-            interval: 1000
-            running: true
-            repeat: true
+            text: Qt.formatDateTime(currentTime, "ddd")
+            color: Theme.textMuted
 
-            onTriggered: {
-                clock.text = Qt.formatDateTime(
-                    new Date(),
-                    "hh:mm AP"
-                )
+            font {
+                family: Theme.fontFamily
+                pixelSize: Theme.fontSmall
             }
+        }
+
+        // Date
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+
+            text: Qt.formatDateTime(currentTime, "dd")
+            color: Theme.textMuted
+
+            font {
+                family: Theme.fontFamily
+                pixelSize: Theme.fontSmall
+            }
+        }
+    }
+
+    Timer {
+        interval: 1000
+        running: true
+        repeat: true
+
+        onTriggered: {
+            capsule.currentTime = new Date()
         }
     }
 }
