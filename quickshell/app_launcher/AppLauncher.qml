@@ -144,13 +144,9 @@ PanelWindow {
         anchors.bottom: parent.bottom
 
         // Semi-translucent frosted panel
-        color: Qt.rgba(Colors.colBg.r, Colors.colBg.g, Colors.colBg.b, 0.8)
+        color: Theme.background
         topLeftRadius: 18
         topRightRadius: 18
-        bottomLeftRadius: 0
-        bottomRightRadius: 0
-        border.color: Qt.alpha(Colors.colFg, 0.10)
-        border.width: 1
 
         // Slide up / down
         transform: Translate {
@@ -332,7 +328,6 @@ PanelWindow {
                         Row {
                             anchors {
                                 fill: parent
-                                leftMargin: 8
                                 rightMargin: 8
                             }
                             spacing: 12
@@ -344,6 +339,7 @@ PanelWindow {
                                 radius: 9
                                 anchors.verticalCenter: parent.verticalCenter
                                 color: appRow.sel ? root.accentIcon : Qt.rgba(1, 1, 1, 0.08)
+                                
                                 Behavior on color {
                                     ColorAnimation {
                                         duration: 100
