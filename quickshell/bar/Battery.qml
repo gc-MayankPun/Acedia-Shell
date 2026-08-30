@@ -1,63 +1,55 @@
 import Quickshell
-import Quickshell.Io
+import Quickshell.Services.UPower
 import QtQuick
+import QtQuick.Layouts
 
 import "../theme"
 
-Item {
-    id: battery
+Rectangle {
+    width: root.implicitWidth + 30
+    height: root.implicitHeight + 10
 
-    property int batteryLevel: 0
-    property string batteryStatus: "Unknown"
+    radius: Theme.radiusPill
+    color: Theme.background
 
-    implicitWidth: batteryText.implicitWidth
-    implicitHeight: batteryText.implicitHeight
+    RowLayout {
+        id: root
 
-    Process {
-        id: batteryProc
+        anchors.centerIn: parent
+        spacing: 6
 
-        command: [
-            "sh",
-            "-c",
-            "printf '%s %s\\n' \"$(cat /sys/class/power_supply/BAT1/capacity)\" \"$(cat /sys/class/power_supply/BAT1/status)\""
-        ]
+        property var battery: UPower.displayDevice
+        property bool charging: battery.state === UPowerDeviceState.Charging
+        readonly property int level: Math.round(battery.percentage * 100)
 
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                var parts = data.trim().split(/\s+/)
-                if (parts.length >= 2) {
-                    battery.batteryLevel = parseInt(parts[0]) || 0
-                    battery.batteryStatus = parts[1]
-                }
+        readonly property string icon: {
+            if (charging) return String.fromCodePoint(0xF0084)
+            if (level >= 100) return String.fromCodePoint(0xF0079)
+            if (level < 10) return String.fromCodePoint(0xF0083)
+
+            return String.fromCodePoint(0xF007A + (Math.floor(level / 10) - 1))
+        }
+
+        Text {
+            text: root.icon
+            color: root.charging ? "#7ad9a8"
+            : root.level <= 15 ? "#ff5048"
+            : root.level <= 30 ? "#ffa478"
+            : "#7ad9a8"
+
+            font {
+                family: "JetBrainsMono Nerd Font Propo"
+                pixelSize: 12
             }
         }
-        
-        Component.onCompleted: running = true
-    }
 
-    Timer {
-        interval: 2000
-        running: true
-        repeat: true
-
-        onTriggered: {
-            batteryProc.running = true
-        }
-    }
- 
-    Text {
-        id: batteryText
-        text: "󰁹 " + battery.batteryLevel + "%"
-        color: battery.batteryStatus === "Charging"
-            ? Theme.batCharging
-            : battery.batteryLevel < 10
-                ? Theme.batLow
-                : Theme.batDischarging
-        font {
-            family: Theme.fontFamily
-            pixelSize: Theme.fontSize
-            bold: true
+        Text {
+            text: root.level + "%"
+            color: "#f5e2c5"
+            font {
+                family: "SF Pro Display"
+                weight: 600
+            }
         }
     }
 }

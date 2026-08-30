@@ -7,9 +7,9 @@ import "../theme"
 
 Rectangle {
     color: Theme.background
-    radius: 10
+    radius: Theme.radiusPill
 
-    implicitWidth: workspaceRow.implicitWidth + 10
+    implicitWidth: workspaceRow.implicitWidth + 15
     implicitHeight: 30
 
     RowLayout {
@@ -20,15 +20,14 @@ Rectangle {
         Repeater {
             model: 9
 
-            Rectangle {
-                property var ws: Hyprland.workspaces.values.find(
-                    w => w.id === index + 1
-                )
+            Rectangle { 
+                required property int index
 
+                property var ws: Hyprland.workspaces.values.find(w => w.id === index + 1)
                 property bool isActive: Hyprland.focusedWorkspace?.id === index + 1
 
-                Layout.preferredWidth: 25
-                Layout.preferredHeight: 25
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
  
                 radius: isActive 
                     ? Theme.radiusLarge
@@ -58,20 +57,19 @@ Rectangle {
 
                 Text {
                     anchors.centerIn: parent
-
                     text: index + 1
 
                     color: isActive
                         ? Theme.workspaceTextActive
                         : mouse.containsMouse 
-                            ? Theme.textHover
+                            ? Theme.workspaceTextActive
                             : (ws
                                 ? Theme.workspaceTextOccupied
                                 : Theme.workspaceTextEmpty)
 
                     font {
                         family: Theme.fontFamily
-                        pixelSize: Theme.fontSize
+                        pixelSize: 12
                         bold: true
                     }
 

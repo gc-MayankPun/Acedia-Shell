@@ -5,31 +5,32 @@ import QtQuick.Layouts
 
 import "../theme"
 
-PanelWindow {    
-    anchors.top: true
-    anchors.left: true
-    anchors.right: true
-
+PanelWindow {
+    anchors {
+        top: true
+        left: true
+        right: true
+    }
     implicitHeight: 40
     color: "transparent"
 
-    Item {
-        anchors.fill: parent         
+    RowLayout {
+        anchors.fill: parent
 
         Workspaces {
-            anchors.left: parent.left
-            anchors.leftMargin: Theme.spacingMedium
-            anchors.verticalCenter: parent.verticalCenter
+            anchors {
+                left: parent.left
+                leftMargin: Theme.spacingMedium
+            }
         }
 
-        Clock {
-            anchors.centerIn: parent
-        }
+        Clock { anchors.centerIn: parent }
 
-        Battery {
-            anchors.right: parent.right
-            anchors.rightMargin: Theme.spacingMedium
-            anchors.verticalCenter: parent.verticalCenter
+        RightStatus {
+            anchors {
+                right: parent.right
+                rightMargin: Theme.spacingMedium
+            }
         }
     }
 }
