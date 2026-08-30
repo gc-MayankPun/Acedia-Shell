@@ -1,13 +1,13 @@
 import Quickshell 
 import Quickshell.Wayland
 
-import "./bar"
-import "./launcher" 
+import "./bar" 
+import "./app_launcher"
 
 ShellRoot {
     id: shell 
 
     Bar {}
-
-    Launcher {} 
+    
+    AppLauncher {}
 }

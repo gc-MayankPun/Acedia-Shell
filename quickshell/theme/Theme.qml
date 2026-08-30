@@ -20,15 +20,15 @@ QtObject {
     readonly property color red: "#FB7185"
     readonly property color pink: "#F0ABFC"
  
-    // Workspace 
-    readonly property color workspaceActive: "#2A2342"
+    // Workspace
+    readonly property color workspaceActive: "#A78BFA"
     readonly property color workspaceOccupied: "#64748B"
-    readonly property color workspaceHover: '#000633'
+    readonly property color workspaceHover: "#7DD3FC"
     readonly property color workspaceEmpty: "#334155"
-
-    readonly property color workspaceTextActive: "#C4B5FD"
+    
+    readonly property color workspaceTextActive: "#0B0E14"
     readonly property color workspaceTextOccupied: "#CBD5E1"
-    readonly property color workspaceTextEmpty: "#475569"
+    readonly property color workspaceTextEmpty: "#64748B"
 
     // Battery
     readonly property color batCharging: "#86EFAC"
