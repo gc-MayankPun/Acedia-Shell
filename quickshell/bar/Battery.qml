@@ -6,8 +6,8 @@ import QtQuick.Layouts
 import "../theme"
 
 Rectangle {
-    width: root.implicitWidth + 30
-    height: root.implicitHeight + 10
+    implicitWidth: root.implicitWidth + 30
+    implicitHeight: root.implicitHeight + 10
 
     radius: Theme.radiusPill
     color: Theme.background

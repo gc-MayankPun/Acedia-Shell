@@ -6,8 +6,8 @@ import QtQuick.Layouts
 import "../theme"
 
 Rectangle {
-  width: root.implicitWidth + 30
-  height: root.implicitHeight + 10
+  implicitWidth: root.implicitWidth + 30 
+  implicitHeight: root.implicitHeight + 10
 
   radius: Theme.radiusPill
   color: Theme.background
@@ -20,6 +20,7 @@ Rectangle {
 
     property var wifiDevice: Networking.devices.values.find(d => d.type === DeviceType.Wifi)
     property var active: wifiDevice ? wifiDevice.networks.values.find(n => n.connected) : null
+    property int maxNetworkNameWidth: 120
 
     readonly property real signal: active ? active.signalStrength : 0
     readonly property string icon: {
@@ -44,6 +45,8 @@ Rectangle {
     }
 
     Text { 
+      id: networkName
+      
       text: {
         if (!Networking.wifiEnabled) return "off"
         if (!root.active) return "Disconnected"
@@ -56,6 +59,15 @@ Rectangle {
         family: "SF Pro Display"
         weight: 500
       }
+
+      Layout.minimumWidth: 0
+      Layout.preferredWidth: Math.min(
+        implicitWidth,
+        root.maxNetworkNameWidth
+      )
+      Layout.maximumWidth: root.maxNetworkNameWidth
+
+      elide: Text.ElideRight
     }
   }
 }
