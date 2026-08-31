@@ -1,7 +1,7 @@
 import Quickshell
 import QtQuick
 
-import "../theme"
+import "../../theme"
 
 Rectangle {
     width: clockCapsule.implicitWidth + 30

@@ -3,7 +3,7 @@ import Quickshell.Networking
 import QtQuick
 import QtQuick.Layouts
 
-import "../theme"
+import "../../theme"
 
 Rectangle {
   implicitWidth: root.implicitWidth + 30 

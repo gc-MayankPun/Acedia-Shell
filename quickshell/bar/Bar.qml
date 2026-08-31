@@ -4,6 +4,8 @@ import QtQuick
 import QtQuick.Layouts
 
 import "../theme"
+import "./center_status_bar"
+import "./right_status_bar"
 
 PanelWindow {
     anchors {
@@ -14,22 +16,24 @@ PanelWindow {
     implicitHeight: 40
     color: "transparent"
 
-    RowLayout {
+    Item {
         anchors.fill: parent
 
         Workspaces {
             anchors {
                 left: parent.left
                 leftMargin: Theme.spacingMedium
+                verticalCenter: parent.verticalCenter
             }
         }
 
-        Clock { anchors.centerIn: parent }
+        CenterStatus { anchors.fill: parent }
 
         RightStatus {
             anchors {
                 right: parent.right
                 rightMargin: Theme.spacingMedium
+                verticalCenter: parent.verticalCenter
             }
         }
     }

@@ -3,7 +3,7 @@ import Quickshell.Services.UPower
 import QtQuick
 import QtQuick.Layouts
 
-import "../theme"
+import "../../theme"
 
 Rectangle {
     implicitWidth: root.implicitWidth + 30
