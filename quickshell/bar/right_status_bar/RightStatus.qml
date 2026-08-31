@@ -7,5 +7,7 @@ RowLayout {
 
   Network {}
 
+  SystemControls {}
+
   Battery {}
 }
