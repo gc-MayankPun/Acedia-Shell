@@ -3,7 +3,8 @@ import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
 
-import "../theme" 
+import "../../config" as Config 
+import "../../components" as Components
 
 PanelWindow {
     id: root
@@ -107,9 +108,9 @@ PanelWindow {
     }
 
     // Accent colours
-    readonly property color accentFill: Qt.rgba(Colors.colBlue.r, Colors.colBlue.g, Colors.colBlue.b, 0.18)
-    readonly property color accentIcon: Qt.rgba(Colors.colBlue.r, Colors.colBlue.g, Colors.colBlue.b, 0.28)
-    readonly property color fgDim: Qt.rgba(Colors.colFg.r, Colors.colFg.g, Colors.colFg.b, 0.65)
+    readonly property color accentFill: Qt.rgba(Config.Theme.colBlue.r, Config.Theme.colBlue.g, Config.Theme.colBlue.b, 0.18)
+    readonly property color accentIcon: Qt.rgba(Config.Theme.colBlue.r, Config.Theme.colBlue.g, Config.Theme.colBlue.b, 0.28)
+    readonly property color fgDim: Qt.rgba(Config.Theme.colFg.r, Config.Theme.colFg.g, Config.Theme.colFg.b, 0.65)
 
     // Panel geometry
     readonly property int maxVisible: 7
@@ -126,52 +127,45 @@ PanelWindow {
     }
 
     // Panel
-    Rectangle {
+    Item {
         id: panel
+
         width: root.panelW
-        // Smooth height shrink/grow when filteredApps count changes
         height: root.panelH
-        Behavior on height {
-            NumberAnimation {
-                duration: 500
-                easing.type: Easing.OutCubic
-            }
+
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom: parent.bottom 
         }
 
-        clip: true   // keep list items inside during height animation
+        // Background shape
+        Components.PopupShape {
+            id: background
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
+            anchors.fill: parent
 
-        // Semi-translucent frosted panel
-        color: Theme.background
-        topLeftRadius: 18
-        topRightRadius: 18
-
-        // Slide up / down
-        transform: Translate {
-            y: AppLauncherState.launcherVisible ? 0 : root.panelH + 6
-            Behavior on y {
-                NumberAnimation {
-                    duration: 500
-                    easing.type: Easing.OutCubic
-                }
-            }
-        } 
+            attachedEdge: "bottom"
+            color: Config.Theme.background
+            radius: 18
+            flareWidth: 18
+            flareHeight: 18
+        }
 
         // Content
         Column {
             anchors {
                 top: parent.top
-                topMargin: 12
                 left: parent.left
-                leftMargin: 12
                 right: parent.right
-                rightMargin: 12
+
+                topMargin: 12
+                leftMargin: 30
+                rightMargin: 30
             }
+
             spacing: 0
 
-            // Drag handle
+            // your existing handle
             Rectangle {
                 width: 36
                 height: 4
@@ -196,7 +190,7 @@ PanelWindow {
                     anchors.fill: parent
                     radius: 10
                     color: "transparent"
-                    border.color: Colors.colBlue
+                    border.color: Config.Theme.colBlue
                     border.width: 1
                     opacity: searchInput.activeFocus ? 0.55 : 0
                     Behavior on opacity {
@@ -221,7 +215,7 @@ PanelWindow {
                         Text {
                             anchors.fill: parent
                             text: root.isSearching ? "" : "Search apps…"
-                            color: Colors.colFg
+                            color: Config.Theme.colFg
                             opacity: 0.28
                             font {
                                 pixelSize: 13
@@ -234,7 +228,7 @@ PanelWindow {
                         TextInput {
                             id: searchInput
                             anchors.fill: parent
-                            color: Colors.colFg
+                            color: Config.Theme.colFg
                             selectionColor: root.accentFill
                             font {
                                 pixelSize: 13
@@ -295,7 +289,7 @@ PanelWindow {
                     anchors.centerIn: parent
                     visible: root.filteredApps.length === 0
                     text: "No apps found"
-                    color: Colors.colFg
+                    color: Config.Theme.colFg
                     opacity: 0.28
                     font {
                         pixelSize: 13
@@ -365,7 +359,7 @@ PanelWindow {
                                         family: "JetBrainsMono Nerd Font"
                                         weight: Font.Bold
                                     }
-                                    color: appRow.sel ? Colors.colBlue : Colors.colFg
+                                    color: appRow.sel ? Config.Theme.colBlue : Config.Theme.colFg
                                     Behavior on color {
                                         ColorAnimation {
                                             duration: 100
@@ -386,7 +380,7 @@ PanelWindow {
                                         family: "JetBrainsMono Nerd Font"
                                         weight: appRow.sel ? Font.Medium : Font.Normal
                                     }
-                                    color: appRow.sel ? Colors.colFg : root.fgDim
+                                    color: appRow.sel ? Config.Theme.colFg : root.fgDim
                                     Behavior on color {
                                         ColorAnimation {
                                             duration: 100
@@ -404,7 +398,7 @@ PanelWindow {
                                         width: recentLabel.width + 8
                                         height: 14
                                         radius: 4
-                                        color: Qt.rgba(Colors.colBlue.r, Colors.colBlue.g, Colors.colBlue.b, 0.22)
+                                        color: Qt.rgba(Config.Theme.colBlue.r, Config.Theme.colBlue.g, Config.Theme.colBlue.b, 0.22)
                                         anchors.verticalCenter: parent.verticalCenter
 
                                         Text {
@@ -415,7 +409,7 @@ PanelWindow {
                                                 pixelSize: 9
                                                 family: "JetBrainsMono Nerd Font"
                                             }
-                                            color: Colors.colBlue
+                                            color: Config.Theme.colBlue
                                         }
                                     }
 
@@ -426,7 +420,7 @@ PanelWindow {
                                             pixelSize: 11
                                             family: "JetBrainsMono Nerd Font"
                                         }
-                                        color: Colors.colFg
+                                        color: Config.Theme.colFg
                                         opacity: 0.35
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -455,5 +449,24 @@ PanelWindow {
                 height: 4
             }
         }
+
+        // Smooth height shrink/grow when filteredApps count changes
+        Behavior on height {
+            NumberAnimation {
+                duration: 500
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        // Slide up / down
+        transform: Translate {
+            y: AppLauncherState.launcherVisible ? 0 : root.panelH + 6
+            Behavior on y {
+                NumberAnimation {
+                    duration: 500
+                    easing.type: Easing.OutCubic
+                }
+            }
+        } 
     }
 }

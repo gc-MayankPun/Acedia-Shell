@@ -1,13 +1,12 @@
-import Quickshell 
-import Quickshell.Wayland
+import Quickshell
 
-import "./bar" 
-import "./app_launcher"
+import "modules/bar" as BarModule
+import "modules/launcher" as LauncherModule
 
 ShellRoot {
-    id: shell 
+    id: shell
 
-    Bar {}
-    
-    AppLauncher {}
+    BarModule.Bar {}
+
+    LauncherModule.AppLauncher {}
 }

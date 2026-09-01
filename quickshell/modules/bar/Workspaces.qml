@@ -3,17 +3,16 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-import "../theme"
+import "../../config" as Config
 
 Rectangle {
-    color: Theme.background
-    radius: Theme.radiusPill
-
-    implicitWidth: workspaceRow.implicitWidth + 15
-    implicitHeight: 30
+    implicitWidth: workspaceRow.implicitWidth + Config.Theme.barWidth 
+    implicitHeight: workspaceRow.implicitHeight + Config.Theme.barHeight
+    color: "transparent"
 
     RowLayout {
-        id: workspaceRow
+        id: workspaceRow  
+
         anchors.centerIn: parent
         spacing: 3
 
@@ -27,31 +26,31 @@ Rectangle {
                 property bool isActive: Hyprland.focusedWorkspace?.id === index + 1
 
                 Layout.preferredWidth: 20
-                Layout.preferredHeight: 20
+                Layout.preferredHeight: 20 
  
                 radius: isActive 
-                    ? Theme.radiusLarge
+                    ? Config.Theme.radiusLarge
                     : mouse.containsMouse 
-                        ? Theme.radiusSmall
+                        ? Config.Theme.radiusSmall
                         : 0
 
                 color: isActive 
-                    ? Theme.workspaceActive 
+                    ? Config.Theme.workspaceActive 
                     : mouse.containsMouse 
-                        ? Theme.workspaceHover
+                        ? Config.Theme.workspaceHover
                         : "transparent"
 
                 Behavior on color {
                     ColorAnimation {
-                        duration: Animations.normal
-                        easing.type: Animations.easing
+                        duration: Config.animNormal
+                        easing.type: Config.animEasing
                     }
                 }
 
                 Behavior on radius {
                     NumberAnimation {
-                        duration: Animations.normal
-                        easing.type: Animations.easing
+                        duration: Config.animNormal
+                        easing.type: Config.animEasing
                     }
                 }
 
@@ -60,23 +59,23 @@ Rectangle {
                     text: index + 1
 
                     color: isActive
-                        ? Theme.workspaceTextActive
+                        ? Config.Theme.workspaceTextActive
                         : mouse.containsMouse 
-                            ? Theme.workspaceTextActive
+                            ? Config.Theme.workspaceTextActive
                             : (ws
-                                ? Theme.workspaceTextOccupied
-                                : Theme.workspaceTextEmpty)
+                                ? Config.Theme.workspaceTextOccupied
+                                : Config.Theme.workspaceTextEmpty)
 
                     font {
-                        family: Theme.fontFamily
-                        pixelSize: 12
+                        family: Config.Theme.fontFamily
+                        pixelSize: Config.Theme.fontSize
                         bold: true
                     }
 
                     Behavior on color {
                         ColorAnimation {
-                            duration: Animations.fast
-                            easing.type: Animations.easing
+                            duration: Config.animFast
+                            easing.type: Config.animEasing
                         }
                     }
                 }

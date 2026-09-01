@@ -3,14 +3,12 @@ import Quickshell.Services.UPower
 import QtQuick
 import QtQuick.Layouts
 
-import "../../theme"
+import "../../config" as Config
 
 Rectangle {
-    implicitWidth: root.implicitWidth + 30
-    implicitHeight: root.implicitHeight + 10
-
-    radius: Theme.radiusPill
-    color: Theme.background
+    implicitWidth: root.implicitWidth + Config.Theme.barWidth
+    implicitHeight: root.implicitHeight + Config.Theme.barHeight
+    color: "transparent"
 
     RowLayout {
         id: root
@@ -39,7 +37,7 @@ Rectangle {
 
             font {
                 family: "JetBrainsMono Nerd Font Propo"
-                pixelSize: 12
+                pixelSize: 14
             }
         }
 
@@ -49,6 +47,7 @@ Rectangle {
             font {
                 family: "SF Pro Display"
                 weight: 600
+                pixelSize: Theme.fontSize
             }
         }
     }
