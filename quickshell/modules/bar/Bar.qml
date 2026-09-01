@@ -11,7 +11,6 @@ PanelWindow {
     implicitHeight: Config.Theme.notchHeight
     color: "transparent" 
 
-
     anchors {
         top: true
         left: true

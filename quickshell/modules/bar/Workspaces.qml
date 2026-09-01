@@ -42,15 +42,13 @@ Rectangle {
 
                 Behavior on color {
                     ColorAnimation {
-                        duration: Config.animNormal
-                        easing.type: Config.animEasing
+                        duration: Config.Theme.animSlow 
                     }
                 }
 
                 Behavior on radius {
                     NumberAnimation {
-                        duration: Config.animNormal
-                        easing.type: Config.animEasing
+                        duration: Config.Theme.animSlow 
                     }
                 }
 
@@ -68,16 +66,16 @@ Rectangle {
 
                     font {
                         family: Config.Theme.fontFamily
-                        pixelSize: Config.Theme.fontSize
-                        bold: true
+                        pixelSize: isActive ? 10 : Config.Theme.fontSize
+                        bold: !isActive ? true : false  
                     }
 
                     Behavior on color {
                         ColorAnimation {
-                            duration: Config.animFast
-                            easing.type: Config.animEasing
+                            duration: Config.Theme.animSlow
+                            easing.type: Config.Theme.animEasing
                         }
-                    }
+                    } 
                 }
 
                 MouseArea { 
