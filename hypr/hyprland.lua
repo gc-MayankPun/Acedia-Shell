@@ -53,8 +53,11 @@ local menu 	  = "qs ipc call applauncher toggle"
 --   hl.exec_cmd("nm-applet")
 --   hl.exec_cmd("waybar & hyprpaper & firefox")
 -- end)
+
 hl.on("hyprland.start", function ()
-    hl.exec_cmd("quickshell -p ~/.config/quickshell/shell.qml")
+    --hl.exec_cmd("hyprpaper")
+    hl.exec_cmd("awww-daemon")
+    hl.exec_cmd("sleep 1 && quickshell -p ~/.config/quickshell/shell.qml")
 end)
 
 -------------------------------
@@ -185,6 +188,12 @@ hl.animation({ leaf = "zoomFactor",    enabled = true,  speed = 7,    bezier = "
 --     border_size = 0,
 --     rounding    = 0,
 -- })
+--hl.layer_rule({
+--    match = {
+--        namespace = "quickshell-wallpaper",
+--    },
+--    blur = true,
+--})
 
 -- See https://wiki.hypr.land/Configuring/Layouts/Dwindle-Layout/ for more
 hl.config({
@@ -213,8 +222,9 @@ hl.config({
 
 hl.config({
     misc = {
-        force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
-        disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
+        force_default_wallpaper = 0,    -- Set to 0 or 1 to disable the anime mascot wallpapers
+        disable_hyprland_logo   = true, -- If true disables the random hyprland logo / anime girl background. :(
+	    disable_splash_rendering = true,
     },
 })
 
@@ -303,18 +313,20 @@ hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
 hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
 hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl s +5%"))
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 5%-"))
 
-hl.bind(
-    "XF86MonBrightnessUp",
-    hl.dsp.exec_cmd("qs ipc call brightness increase"),
-    { locked = true, repeating = true }
-)
+--hl.bind(
+--    "XF86MonBrightnessUp",    
+--    hl.dsp.exec_cmd("qs ipc call brightness increase"),
+--    { locked = true, repeating = true }
+--)
 
-hl.bind(
-    "XF86MonBrightnessDown",
-    hl.dsp.exec_cmd("qs ipc call brightness decrease"),
-    { locked = true, repeating = true }
-)
+--hl.bind(
+--    "XF86MonBrightnessDown",
+--    hl.dsp.exec_cmd("qs ipc call brightness decrease"),
+--    { locked = true, repeating = true }
+--)
 
 -- Requires playerctl
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
@@ -323,12 +335,15 @@ hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
 -- Misc keybinds
-
 -- Screenshot entire screen
 hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
 
 -- Screenshot selected area
 hl.bind(mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
+
+-- Kill quickshell
+hl.bind(mainMod .. " + CTRL + C", hl.dsp.exec_cmd("pkill quickshell"))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
