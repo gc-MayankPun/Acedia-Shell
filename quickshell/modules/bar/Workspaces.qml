@@ -73,7 +73,7 @@ Rectangle {
                     Behavior on color {
                         ColorAnimation {
                             duration: Config.Theme.animSlow
-                            easing.type: Config.Theme.animEasing
+                            easing.type: Config.Theme.smoothEasing
                         }
                     } 
                 }

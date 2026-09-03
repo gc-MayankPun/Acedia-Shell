@@ -100,7 +100,8 @@ QtObject {
     readonly property int animFast: 120
     readonly property int animNormal: 200
     readonly property int animSlow: 350
-    readonly property int animEasing: Easing.OutCubic
+    readonly property int smoothEasing: Easing.OutCubic
+    readonly property int springEasing: Easing.OutBack
 
     // Notch
     property int notchPadding: 16
