@@ -28,7 +28,7 @@ QtObject {
 
     // Battery
     readonly property color batCharging: "#7ad9a8"
-    readonly property color batDischarging: ColorLoader.tertiary
+    readonly property color batDischarging: "#FDE68A"
     readonly property color batLow: "#ff5048"
 
     // Text

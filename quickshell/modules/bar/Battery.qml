@@ -33,7 +33,7 @@ Rectangle {
             color: root.charging ? Config.Theme.batCharging
             : root.level <= 15 ? Config.Theme.batLow 
             : root.level <= 30 ? Config.Theme.batDischarging
-            : Config.Theme.batCharging
+            : Config.Theme.text
 
             font {
                 family: Config.Theme.fontFamily
@@ -46,7 +46,7 @@ Rectangle {
             color: root.charging ? Config.Theme.batCharging
             : root.level <= 15 ? Config.Theme.batLow     
             : root.level <= 30 ? Config.Theme.batDischarging
-            : Config.Theme.batCharging
+            : Config.Theme.text
             font {
                 family: Config.Theme.fontFamily
                 weight: 600
