@@ -22,8 +22,8 @@ PanelWindow {
         id: workspaces
 
         anchors {
-            left: parent.left
-            top: parent.top  
+            verticalCenter: parent.verticalCenter
+            left: parent.left 
         }
         z: 1
     }
@@ -34,7 +34,7 @@ PanelWindow {
 
         anchors {
             horizontalCenter: parent.horizontalCenter
-            top: parent.top  
+            verticalCenter: parent.verticalCenter 
         }
         z:1
     }
@@ -44,8 +44,8 @@ PanelWindow {
         id: battery
 
         anchors {
+            verticalCenter: parent.verticalCenter
             right: parent.right
-            top: parent.top 
         }
         z:1
     }
@@ -63,7 +63,7 @@ PanelWindow {
         rightWidth: battery.width
 
         notchHeight: Config.Theme.notchHeight
-        radius: 18
+        radius: 20
 
         color: Config.Theme.background
     }

@@ -108,9 +108,9 @@ PanelWindow {
     }
 
     // Accent colours
-    readonly property color accentFill: Qt.rgba(Config.Theme.colBlue.r, Config.Theme.colBlue.g, Config.Theme.colBlue.b, 0.18)
-    readonly property color accentIcon: Qt.rgba(Config.Theme.colBlue.r, Config.Theme.colBlue.g, Config.Theme.colBlue.b, 0.28)
-    readonly property color fgDim: Qt.rgba(Config.Theme.colFg.r, Config.Theme.colFg.g, Config.Theme.colFg.b, 0.65)
+    readonly property color accentFill: Qt.rgba(Config.Theme.secondary.r, Config.Theme.secondary.g, Config.Theme.secondary.b, 0.18)
+    readonly property color accentIcon: Qt.rgba(Config.Theme.secondary.r, Config.Theme.secondary.g, Config.Theme.secondary.b, 0.28)
+    readonly property color fgDim: Qt.rgba(Config.Theme.text.r, Config.Theme.text.g, Config.Theme.text.b, 0.65)
 
     // Panel geometry
     readonly property int maxVisible: 7
@@ -143,7 +143,6 @@ PanelWindow {
             id: background
 
             anchors.fill: parent
-
             attachedEdge: "bottom"
             color: Config.Theme.background
             radius: 18
@@ -190,12 +189,12 @@ PanelWindow {
                     anchors.fill: parent
                     radius: 10
                     color: "transparent"
-                    border.color: Config.Theme.colBlue
+                    border.color: Config.Theme.secondary
                     border.width: 1
                     opacity: searchInput.activeFocus ? 0.55 : 0
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 150
+                            duration: Config.Theme.animFast
                         }
                     }
                 }
@@ -215,11 +214,11 @@ PanelWindow {
                         Text {
                             anchors.fill: parent
                             text: root.isSearching ? "" : "Search apps…"
-                            color: Config.Theme.colFg
+                            color: Config.Theme.text
                             opacity: 0.28
                             font {
-                                pixelSize: 13
-                                family: "JetBrainsMono Nerd Font"
+                                pixelSize: Config.Theme.fontSmall
+                                family: Config.Theme.fontFamily
                             }
                             verticalAlignment: Text.AlignVCenter
                             visible: searchInput.text === ""
@@ -228,11 +227,11 @@ PanelWindow {
                         TextInput {
                             id: searchInput
                             anchors.fill: parent
-                            color: Config.Theme.colFg
+                            color: Config.Theme.text
                             selectionColor: root.accentFill
                             font {
-                                pixelSize: 13
-                                family: "JetBrainsMono Nerd Font"
+                                pixelSize: Config.Theme.fontSmall
+                                family: Config.Theme.fontFamily
                             }
                             verticalAlignment: TextInput.AlignVCenter
                             clip: true
@@ -277,6 +276,7 @@ PanelWindow {
                 // Wheel on list (belt-and-suspenders alongside panel MouseArea)
                 MouseArea {
                     anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
                     onWheel: function (wheel) {
                         if (wheel.angleDelta.y < 0)
                             root.navigate(1);
@@ -289,11 +289,11 @@ PanelWindow {
                     anchors.centerIn: parent
                     visible: root.filteredApps.length === 0
                     text: "No apps found"
-                    color: Config.Theme.colFg
+                    color: Config.Theme.text
                     opacity: 0.28
                     font {
-                        pixelSize: 13
-                        family: "JetBrainsMono Nerd Font"
+                        pixelSize: Config.Theme.fontSmall
+                        family: Config.Theme.fontFamily
                     }
                 }
 
@@ -356,10 +356,10 @@ PanelWindow {
                                     text: modelData.name.charAt(0).toUpperCase()
                                     font {
                                         pixelSize: 15
-                                        family: "JetBrainsMono Nerd Font"
+                                        family: Config.Theme.fontFamily
                                         weight: Font.Bold
                                     }
-                                    color: appRow.sel ? Config.Theme.colBlue : Config.Theme.colFg
+                                    color: appRow.sel ? Config.Theme.secondary : Config.Theme.text
                                     Behavior on color {
                                         ColorAnimation {
                                             duration: 100
@@ -376,11 +376,11 @@ PanelWindow {
                                 Text {
                                     text: modelData.name
                                     font {
-                                        pixelSize: 13
-                                        family: "JetBrainsMono Nerd Font"
+                                        pixelSize: Config.Theme.fontSmall
+                                        family: Config.Theme.fontFamily
                                         weight: appRow.sel ? Font.Medium : Font.Normal
                                     }
-                                    color: appRow.sel ? Config.Theme.colFg : root.fgDim
+                                    color: appRow.sel ? Config.Theme.text : root.fgDim
                                     Behavior on color {
                                         ColorAnimation {
                                             duration: 100
@@ -398,7 +398,7 @@ PanelWindow {
                                         width: recentLabel.width + 8
                                         height: 14
                                         radius: 4
-                                        color: Qt.rgba(Config.Theme.colBlue.r, Config.Theme.colBlue.g, Config.Theme.colBlue.b, 0.22)
+                                        color: Qt.rgba(Config.Theme.secondary.r, Config.Theme.secondary.g, Config.Theme.secondary.b, 0.22)
                                         anchors.verticalCenter: parent.verticalCenter
 
                                         Text {
@@ -407,9 +407,9 @@ PanelWindow {
                                             text: "recent"
                                             font {
                                                 pixelSize: 9
-                                                family: "JetBrainsMono Nerd Font"
+                                                family: Config.Theme.fontFamily
                                             }
-                                            color: Config.Theme.colBlue
+                                            color: Config.Theme.secondary
                                         }
                                     }
 
@@ -418,9 +418,9 @@ PanelWindow {
                                         text: modelData.genericName
                                         font {
                                             pixelSize: 11
-                                            family: "JetBrainsMono Nerd Font"
+                                            family: Config.Theme.fontFamily
                                         }
-                                        color: Config.Theme.colFg
+                                        color: Config.Theme.text
                                         opacity: 0.35
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -453,8 +453,8 @@ PanelWindow {
         // Smooth height shrink/grow when filteredApps count changes
         Behavior on height {
             NumberAnimation {
-                duration: 500
-                easing.type: Easing.OutCubic
+                duration: Config.Theme.animVerySlow
+                easing.type: Config.Theme.smoothEasing
             }
         }
 
@@ -463,8 +463,8 @@ PanelWindow {
             y: AppLauncherState.launcherVisible ? 0 : root.panelH + 6
             Behavior on y {
                 NumberAnimation {
-                    duration: 500
-                    easing.type: Easing.OutCubic
+                    duration: Config.Theme.animVerySlow
+                    easing.type: Config.Theme.smoothEasing
                 }
             }
         } 

@@ -1,2 +1,2 @@
 singleton Theme Theme.qml
-ColorLoader ColorLoader.qml
+singleton ColorLoader ColorLoader.qml

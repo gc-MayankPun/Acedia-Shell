@@ -1,35 +1,48 @@
 import Quickshell
 import QtQuick
+import QtQuick.Layouts
 
 import "../../config" as Config
 
 Rectangle {
-    width: clockCapsule.implicitWidth + Config.Theme.barWidth
-    height: clockCapsule.implicitHeight + Config.Theme.barHeight
+    width: clockRow.implicitWidth + Config.Theme.barWidth
+    height: clockRow.implicitHeight + Config.Theme.barHeight
+
     color: "transparent"
 
-    Text {
-        id: clockCapsule
+    RowLayout {
+        id: clockRow
+
         anchors.centerIn: parent
+        spacing: 13
 
-        text: '<span style="color:' + Config.Theme.clock + '; font-size:' + Config.Theme.fontSize + 'px; font-weight: 700">'
-        + Qt.formatDateTime(clock.date, "hh:mm")
-        + '</span>'
-        + '&nbsp;&nbsp;'
-        + '<span style="color:' + Config.Theme.textMuted + '; font-size:' + Config.Theme.fontSmall + 'px; font-weight: 600">'
-        + Qt.formatDateTime(clock.date, "ddd dd")
-        + '</span>'
+        Text {
+            text: Qt.formatDateTime(clock.date, "hh:mm")
 
-        textFormat: Text.RichText
+            color: Config.Theme.primary
 
-        font {
-            family: Config.Theme.fontFamily
-            letterSpacing: -0.5  
+            font {
+                family: Config.Theme.fontFamily
+                pixelSize: Config.Theme.fontSize
+                weight: 700
+            }
         }
 
-        SystemClock {
-            id: clock
-            precision: SystemClock.Minutes
+        Text {
+            text: Qt.formatDateTime(clock.date, "ddd dd")
+
+            color: Config.Theme.textMuted
+
+            font {
+                family: Config.Theme.fontFamily
+                pixelSize: Config.Theme.fontSmall
+                weight: 600
+            }
         }
+    }
+
+    SystemClock {
+        id: clock
+        precision: SystemClock.Minutes
     }
 }

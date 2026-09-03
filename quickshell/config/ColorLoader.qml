@@ -1,59 +1,179 @@
-import QtQuick
-import Quickshell.Io
+pragma Singleton
 
-// ============================================================
-// ColorsLoader — watches ~/.cache/brain-shell/colors.json
-// and exposes parsed color properties.
-//
-// Not a singleton. Instantiated as a property inside Theme.qml.
-// Theme.qml reads loader.background, loader.active etc.
-// ============================================================
+import Quickshell
+import Quickshell.Io
+import QtQuick
 
 QtObject {
     id: root
 
-    // ── Parsed colors (with fallbacks matching original palette) ──────────────
-    property color background: "#1a282a"
-    property color active:     "#a6d0f7"
-    property color text:       "#cdd6f4"
-    property color subtext:    "#94e2d5"
-    property color icon:       "#cdd6f4"
-    property color border:     "#ffffff"
-    property color iconFont:   "#2f8d97"
+    readonly property string colorsPath: Quickshell.env("HOME") + "/.config/quickshell/config/colors.json"
 
-    // ── File watcher ──────────────────────────────────────────────────────────
-    property var _file: FileView {
-        id: colorsFile
+    // Background
+    property color background
+    property color surface
+    property color surfaceVariant
+
+    // Surface levels
+    property color surfaceDim
+    property color surfaceBright
+    property color surfaceContainer
+    property color surfaceContainerLow
+    property color surfaceContainerHigh
+    property color surfaceContainerHighest
+
+    // Text/content
+    property color text
+    property color textMuted
+    property color surfaceContent
+
+    // Primary
+    property color primary
+    property color primaryContainer
+    property color primaryContent
+    property color primaryContainerContent
+
+    // Secondary
+    property color secondary
+    property color secondaryContainer
+    property color secondaryContent
+    property color secondaryContainerContent
+
+    // Tertiary
+    property color tertiary
+    property color tertiaryContainer
+    property color tertiaryContent
+    property color tertiaryContainerContent
+
+    // Outline
+    property color border
+    property color borderVariant
+
+    // Error
+    property color errorColor
+    property color errorContainer
+    property color errorContent
+    property color errorContainerContent
+ 
+    // JSON file
+    property FileView colorFile: FileView {
+        path: root.colorsPath
+
         watchChanges: true
-        onFileChanged: reload()
-        onLoaded: root._parse(colorsFile.text())
-    }
 
-    property var _homeProc: Process {
-        command: ["bash", "-c", "echo $HOME"]
-        running: true
-        stdout: SplitParser {
-            onRead: function(line) {
-                var h = line.trim()
-                if (h !== "")
-                    colorsFile.path = h + "/.cache/brain-shell/colors.json"
-            }
+        onLoaded: {
+            root.loadColors()
+        }
+
+        onFileChanged: {
+            reload()
+        }
+
+        onLoadFailed: function(error) {
+            console.log(
+                "ColorLoader: failed to load colors.json:",
+                error
+            )
         }
     }
-
-    // ── Parser ────────────────────────────────────────────────────────────────
-    function _parse(raw) {
-        if (!raw || raw.trim() === "") return
+ 
+    // Parser 
+    function loadColors() {
         try {
-            var obj = JSON.parse(raw)
-            if (obj.background) root.background = obj.background
-            if (obj.active)     root.active     = obj.active
-            if (obj.text)       { root.text = obj.text; root.icon = obj.text }
-            if (obj.subtext)    root.subtext    = obj.subtext
-            if (obj.border)     root.border     = obj.border
-            if (obj.iconFont)   root.iconFont   = obj.iconFont
-        } catch (e) {
-            // Malformed JSON — keep fallback values
+            const json = JSON.parse(colorFile.text())
+            const c = json.colors
+
+            // Base
+            root.background = c.background.dark.color
+            root.surface = c.surface.dark.color
+            root.surfaceVariant = c.surface_variant.dark.color
+
+            // Surface levels
+            root.surfaceDim = c.surface_dim.dark.color
+            root.surfaceBright = c.surface_bright.dark.color
+            root.surfaceContainer = c.surface_container.dark.color
+            root.surfaceContainerLow = c.surface_container_low.dark.color
+            root.surfaceContainerHigh = c.surface_container_high.dark.color
+            root.surfaceContainerHighest =
+                c.surface_container_highest.dark.color
+
+            // Text
+            root.text = c.on_background.dark.color
+            root.textMuted = c.on_surface_variant.dark.color
+            root.surfaceContent = c.on_surface.dark.color
+
+            // Primary
+            root.primary = c.primary.dark.color
+            root.primaryContainer =
+                c.primary_container.dark.color
+
+            root.primaryContent =
+                c.on_primary.dark.color
+
+            root.primaryContainerContent =
+                c.on_primary_container.dark.color
+
+            // Secondary
+            root.secondary =
+                c.secondary.dark.color
+
+            root.secondaryContainer =
+                c.secondary_container.dark.color
+
+            root.secondaryContent =
+                c.on_secondary.dark.color
+
+            root.secondaryContainerContent =
+                c.on_secondary_container.dark.color
+
+            // Tertiary
+            root.tertiary =
+                c.tertiary.dark.color
+
+            root.tertiaryContainer =
+                c.tertiary_container.dark.color
+
+            root.tertiaryContent =
+                c.on_tertiary.dark.color
+
+            root.tertiaryContainerContent =
+                c.on_tertiary_container.dark.color
+
+            // Borders
+            root.border =
+                c.outline.dark.color
+
+            root.borderVariant =
+                c.outline_variant.dark.color
+
+            // Error
+            root.errorColor =
+                c.error.dark.color
+
+            root.errorContainer =
+                c.error_container.dark.color
+
+            root.errorContent =
+                c.on_error.dark.color
+
+            root.errorContainerContent =
+                c.on_error_container.dark.color
+
+            // Source
+            root.sourceColor =
+                c.source_color.dark.color
+
+            console.log(
+                "ColorLoader: colors updated",
+                "| primary:", root.primary,
+                "| background:", root.background
+            )
+
+        } catch (error) {
+            console.log(
+                "ColorLoader: JSON parse failed:",
+                error
+            )
         }
     }
 }

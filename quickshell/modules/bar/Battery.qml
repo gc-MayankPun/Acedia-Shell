@@ -30,24 +30,27 @@ Rectangle {
 
         Text {
             text: root.icon
-            color: root.charging ? "#7ad9a8"
-            : root.level <= 15 ? "#ff5048"
-            : root.level <= 30 ? "#ffa478"
-            : "#7ad9a8"
+            color: root.charging ? Config.Theme.batCharging
+            : root.level <= 15 ? Config.Theme.batLow 
+            : root.level <= 30 ? Config.Theme.batDischarging
+            : Config.Theme.batCharging
 
             font {
-                family: "JetBrainsMono Nerd Font Propo"
+                family: Config.Theme.fontFamily
                 pixelSize: 14
             }
         }
 
         Text {
             text: root.level + "%"
-            color: "#f5e2c5"
+            color: root.charging ? Config.Theme.batCharging
+            : root.level <= 15 ? Config.Theme.batLow     
+            : root.level <= 30 ? Config.Theme.batDischarging
+            : Config.Theme.batCharging
             font {
-                family: "SF Pro Display"
+                family: Config.Theme.fontFamily
                 weight: 600
-                pixelSize: Theme.fontSize
+                pixelSize: Config.Theme.fontSmall
             }
         }
     }

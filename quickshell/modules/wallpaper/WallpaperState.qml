@@ -75,6 +75,22 @@ QtObject {
         command: []
     }
 
+    property Process matugenProc: Process {
+        command: []
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+            console.log("Matugen:", text.trim())
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                console.log("Matugen error:", text.trim())
+            }
+        }
+    }
+
     Component.onCompleted: { scanProc.running = true }
 
     function toggle() { wallpaperVisible = !wallpaperVisible }
@@ -135,7 +151,8 @@ QtObject {
             path
         ]
 
-        wallpaperProc.running = true
+        wallpaperProc.running = true 
+        generateColors(path)
     }
 
     function restoreWallpaper() {
@@ -157,6 +174,19 @@ QtObject {
             "150"
         ]
 
-        wallpaperProc.running = true
+        wallpaperProc.running = true 
+        generateColors(path)
+    }
+
+    function generateColors(path) {
+        console.log("Generating colors from:", path)
+
+        matugenProc.command = [
+            Quickshell.env("HOME") +
+                "/.config/quickshell/scripts/generate_colors.sh",
+            path
+        ]
+
+        matugenProc.running = true
     }
 }
