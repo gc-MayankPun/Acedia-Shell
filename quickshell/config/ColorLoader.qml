@@ -159,10 +159,6 @@ QtObject {
             root.errorContainerContent =
                 c.on_error_container.dark.color
 
-            // Source
-            root.sourceColor =
-                c.source_color.dark.color
-
             console.log(
                 "ColorLoader: colors updated",
                 "| primary:", root.primary,

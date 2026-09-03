@@ -24,7 +24,7 @@ QtObject {
 
     readonly property color workspaceTextActive: ColorLoader.primaryContent
     readonly property color workspaceTextOccupied: ColorLoader.primary
-    readonly property color workspaceTextEmpty: ColorLoader.borderVariant 
+    readonly property color workspaceTextEmpty: ColorLoader.border
 
     // Battery
     readonly property color batCharging: "#7ad9a8"
