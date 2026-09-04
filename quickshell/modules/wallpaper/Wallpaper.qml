@@ -38,8 +38,8 @@ PanelWindow {
     color: "transparent"
 
     Rectangle {
-        anchors.centerIn: parent
-        width: 500
+        anchors.centerIn: parent 
+        width: 1000
         height: 400
         color: "transparent"
         clip: true
@@ -51,32 +51,24 @@ PanelWindow {
             Repeater {
                 model: WallpaperState.wallpapers
 
-                Item {
+                Rectangle {
                     id: card
 
                     property int distance: index - WallpaperState.selectedIndex
-                    property int absDistance: Math.abs(distance)
+                    property int absDistance: Math.abs(distance) 
+                    property bool currentWallpaper: index === WallpaperState.selectedIndex
+                    property int rotationValue: currentWallpaper ? 0 : (distance < 0 ? -60 : 60)
 
-                    // Base size of every wallpaper
-                    width: 300
-                    height: 200
+                    color: "transparent" 
+                    implicitWidth: 300 
+                    height: 300
+                    clip: true
 
-                    // Keep every wallpaper centered around its position
-                    x: carousel.width / 2
-                       + distance * 160
-                       - width / 2
-
+                    // Keep every wallpaper centered around its position 
+                    x: carousel.width / 2 + distance * 210 - width / 2
                     y: (carousel.height - height) / 2
-
-                    // Selected wallpaper becomes larger
-                    scale: distance === 0
-                           ? 1.33
-                           : 0.55
-
-                    opacity: absDistance > 5
-                            ? 0
-                            : Math.max(0.35, 1.0 - absDistance * 0.1)
-
+ 
+                    scale: distance === 0 ? 1.33 : 1
                     z: 100 - absDistance
 
                     Behavior on x {
@@ -91,7 +83,7 @@ PanelWindow {
                             duration: Config.Theme.animSlow
                             easing.type: Config.Theme.springEasing
                         }
-                    }
+                    } 
 
                     Behavior on opacity {
                         NumberAnimation {
@@ -101,15 +93,45 @@ PanelWindow {
                     }
 
                     Rectangle {
-                        anchors.fill: parent 
+                        anchors.centerIn: parent
+                        color: "transparent"
+                        width: parent.width 
+                        height: parent.height - 128
+                        rotation: -rotationValue
                         clip: true
+                        radius: 10
 
-                        Image {
-                            anchors.fill: parent
-                            source: modelData
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: true
-                            cache: true 
+                        Behavior on rotation {
+                            NumberAnimation {
+                                duration: Config.Theme.animVerySlow
+                                easing: Config.Theme.smoothEasing
+                            }
+                        }
+
+                        Loader {
+                            anchors.centerIn: parent
+                            height: parent.height
+                            width: currentWallpaper ? 300 : parent.width
+                            sourceComponent: modelData.toLowerCase().endsWith(".gif") ? animatedImage : normalImage
+
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: Config.Theme.animVerySlow
+                                    easing.type: Config.Theme.smoothEasing
+                                }
+                            }
+
+                            // Static Wallpapers
+                            Component {
+                                id: normalImage
+                                StaticWallpaper {}
+                            }
+
+                            // Animated Wallpapers
+                            Component {
+                                id: animatedImage
+                                AnimatedWallpaper {}
+                            }
                         }
                     }
                 }

@@ -140,14 +140,10 @@ QtObject {
         console.log("Setting wallpaper:", path)
 
         wallpaperProc.command = [
-            "awww",
+            "awww", 
             "img",
-            "--transition-type",
-            "random",
-            "--transition-pos",
-            "0.854, 0.977",
-            "--transition-step",
-            "150",
+            "--transition-type", "random",
+            "--transition-fps", "60",
             path
         ]
 
@@ -165,13 +161,11 @@ QtObject {
         console.log("Restoring wallpaper:", path)
 
         wallpaperProc.command = [
-            "awww",
+            "awww", 
             "img",
-            path,
-            "--transition-type",
-            "fade",
-            "--transition-step",
-            "150"
+            "--transition-type", "random",
+            "--transition-fps", "60",
+            path
         ]
 
         wallpaperProc.running = true 
