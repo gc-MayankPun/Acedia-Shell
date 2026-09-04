@@ -115,9 +115,8 @@ PanelWindow {
     // Panel geometry
     readonly property int maxVisible: 7
     readonly property int itemH: 42
-    readonly property int panelW: 440
-    // 12 top-pad + 4 handle + 8 + 44 search + 8 + list + 12 bot-pad
-    readonly property int panelH: 88 + Math.min(filteredApps.length, maxVisible) * itemH
+    readonly property int panelW: 440 
+    readonly property int panelH: 88 + Math.min(filteredApps.length, maxVisible) * itemH + (root.filteredApps.length === 0 ? 20 : 0)
 
     // Click outside → close
     MouseArea {
@@ -285,25 +284,13 @@ PanelWindow {
                     }
                 }
 
-                Text {
-                    anchors.centerIn: parent
-                    visible: root.filteredApps.length === 0
-                    text: "No apps found"
-                    color: Config.Theme.text
-                    opacity: 0.28
-                    font {
-                        pixelSize: Config.Theme.fontSmall
-                        family: Config.Theme.fontFamily
-                    }
-                }
-
                 delegate: Item {
                     id: appRow
                     width: listView.width
                     height: root.itemH
 
                     readonly property bool sel: root.selectedIndex === index
-                    readonly property bool isRecent: !root.isSearching && AppLauncherState.recentIds.indexOf(modelData.id) !== -1 && AppLauncherState.recentIds.indexOf(modelData.id) < 5
+                    // readonly property bool isRecent: !root.isSearching && AppLauncherState.recentIds.indexOf(modelData.id) !== -1 && AppLauncherState.recentIds.indexOf(modelData.id) < 5
 
                     Rectangle {
                         anchors {
@@ -388,32 +375,7 @@ PanelWindow {
                                     }
                                 }
 
-                                // "Recently used" pill OR generic name
-                                Row {
-                                    spacing: 6
-                                    visible: appRow.isRecent || modelData.genericName !== ""
-
-                                    Rectangle {
-                                        visible: appRow.isRecent
-                                        width: recentLabel.width + 8
-                                        height: 14
-                                        radius: 4
-                                        color: Qt.rgba(Config.Theme.secondary.r, Config.Theme.secondary.g, Config.Theme.secondary.b, 0.22)
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Text {
-                                            id: recentLabel
-                                            anchors.centerIn: parent
-                                            text: "recent"
-                                            font {
-                                                pixelSize: 9
-                                                family: Config.Theme.fontFamily
-                                            }
-                                            color: Config.Theme.secondary
-                                        }
-                                    }
-
-                                    Text {
+                                Text {
                                         visible: modelData.genericName !== ""
                                         text: modelData.genericName
                                         font {
@@ -421,10 +383,8 @@ PanelWindow {
                                             family: Config.Theme.fontFamily
                                         }
                                         color: Config.Theme.text
-                                        opacity: 0.35
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                }
+                                        opacity: 0.35 
+                                } 
                             }
                         }
 
@@ -443,6 +403,25 @@ PanelWindow {
                     }
                 }
             }
+
+            // No Apps Found message
+            Rectangle { 
+                visible: root.filteredApps.length === 0
+                height: 20
+                width: parent.width
+                color: "transparent"
+
+                Text {  
+                    anchors.centerIn: parent
+                    text: "No apps found"
+                    color: Config.Theme.text
+                    opacity: 0.28
+                    font {
+                        pixelSize: Config.Theme.fontSmall
+                        family: Config.Theme.fontFamily
+                    }
+                }
+            } 
 
             Item {
                 width: 1
