@@ -71,6 +71,7 @@ QtObject {
     readonly property int animNormal: 200
     readonly property int animSlow: 350
     readonly property int animVerySlow: 500
+    readonly property int animLazy: 1000
     readonly property int smoothEasing: Easing.OutCubic
     readonly property int springEasing: Easing.OutBack
 
