@@ -224,7 +224,7 @@ hl.config({
     misc = {
         force_default_wallpaper = 0,    -- Set to 0 or 1 to disable the anime mascot wallpapers
         disable_hyprland_logo   = true, -- If true disables the random hyprland logo / anime girl background. :(
-	    disable_splash_rendering = true,
+	disable_splash_rendering = true,
     },
 })
 
@@ -336,13 +336,25 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 
 -- Misc keybinds
 -- Screenshot entire screen
-hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
+--hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
+hl.bind(
+    mainMod .. " + PRINT",
+    hl.dsp.exec_cmd(
+        "grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png && notify-send 'Screenshot' 'Screenshot captured'"
+    )
+)
 
 -- Screenshot selected area
-hl.bind(mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
+--hl.bind(mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
+hl.bind(
+    mainMod .. " + SHIFT + PRINT",
+    hl.dsp.exec_cmd(
+        "grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png && notify-send 'Screenshot' 'Selected area captured'"
+    )
+)
 
--- Kill quickshell
-hl.bind(mainMod .. " + CTRL + C", hl.dsp.exec_cmd("pkill quickshell"))
+-- Reload  quickshell
+hl.bind(mainMod .. " + CTRL + C", hl.dsp.exec_cmd("~/.config/quickshell/reload-quickshell.sh"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
 
 --------------------------------
