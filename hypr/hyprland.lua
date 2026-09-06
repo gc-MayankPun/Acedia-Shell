@@ -336,20 +336,25 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 
 -- Misc keybinds
 -- Screenshot entire screen
---hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
 hl.bind(
     mainMod .. " + PRINT",
     hl.dsp.exec_cmd(
-        "grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png && notify-send 'Screenshot' 'Screenshot captured'"
+        "file=~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png; " ..
+        "grim \"$file\" && " ..
+        "wl-copy --type image/png < \"$file\" && " ..
+        "notify-send 'Screenshot' 'Screenshot captured'"
     )
 )
 
 -- Screenshot selected area
---hl.bind(mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"))
 hl.bind(
     mainMod .. " + SHIFT + PRINT",
     hl.dsp.exec_cmd(
-        "grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png && notify-send 'Screenshot' 'Selected area captured'"
+        "file=~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png; " ..
+        "geometry=$(slurp) && " ..
+        "grim -g \"$geometry\" \"$file\" && " ..
+        "wl-copy --type image/png < \"$file\" && " ..
+        "notify-send 'Screenshot' 'Selected area captured'"
     )
 )
 

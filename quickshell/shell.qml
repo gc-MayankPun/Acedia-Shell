@@ -2,7 +2,8 @@ import Quickshell
 
 import "modules/bar" as BarModule
 import "modules/launcher" as LauncherModule
-import "modules/wallpaper" as WallpaperModule
+import "modules/wallpaper" as WallpaperModule 
+import "modules/notifications" as NotificationModule
 
 ShellRoot {
     id: shell
@@ -12,4 +13,6 @@ ShellRoot {
     LauncherModule.AppLauncher {}
 
     WallpaperModule.Wallpaper {}
+
+    NotificationModule.Notifications {}
 }
