@@ -359,8 +359,9 @@ hl.bind(
 )
 
 -- Reload  quickshell
-hl.bind(mainMod .. " + CTRL + C", hl.dsp.exec_cmd("~/.config/quickshell/reload-quickshell.sh"))
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
+hl.bind(mainMod .. " + CTRL + C", hl.dsp.exec_cmd("~/.config/quickshell/scripts/reload-quickshell.sh"))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/quickshell/scripts/wallpaper_switcher.sh"))
+hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("qs ipc call clipboard toggle"))
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----

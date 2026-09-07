@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
+import QtQuick.Layouts
 
 import "../../config" as Config
 
@@ -10,6 +11,7 @@ PanelWindow {
 
     property var screen
     property bool isWallpaperActive: WallpaperState.wallpaperVisible
+    property bool hasWallpapers: WallpaperState.wallpapers.length !== 0
 
     visible: isWallpaperActive
 
@@ -50,6 +52,7 @@ PanelWindow {
 
             Repeater {
                 model: WallpaperState.wallpapers
+                visible: hasWallpapers
 
                 Rectangle {
                     id: card
@@ -135,7 +138,7 @@ PanelWindow {
                         }
                     }
                 }
-            }
+            } 
         }
 
         focus: isWallpaperActive

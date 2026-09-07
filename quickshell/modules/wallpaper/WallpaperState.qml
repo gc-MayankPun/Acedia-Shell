@@ -13,7 +13,7 @@ QtObject {
     property string folderPath: "$HOME/Pictures/Wallpapers"
     property string monitorOutput: "eDP-1"
 
-    property var wallpapers: []
+    property var wallpapers: [] 
     property int selectedIndex: 0
     property string currentWallpaper: ""
 
@@ -35,7 +35,10 @@ QtObject {
             root.restoreWallpaper()
         }
 
-        onLoadFailed: function(error) { console.log("No saved wallpaper found") }
+        onLoadFailed: function(error) { 
+            console.log("No saved wallpaper found") 
+            root.restoreWallpaper()
+        }
         onSaved: { console.log("Wallpaper saved successfully") }
         onSaveFailed: function(error) { console.log("Wallpaper save failed:", error) }
     }
@@ -91,11 +94,32 @@ QtObject {
         }
     }
 
+    property Process notifyProc: Process {
+        command: [
+            "notify-send",
+            "-u", "critical",
+            "No wallpapers found", 
+            "Put your wallpapers in ~/Pictures/Wallpapers"
+        ]
+    }
+
     Component.onCompleted: { scanProc.running = true }
 
-    function toggle() { wallpaperVisible = !wallpaperVisible }
-    function show() { wallpaperVisible = true }
+    function toggle() { 
+        wallpaperVisible = !wallpaperVisible
+        if (wallpaperVisible) rescan()
+    }
+
+    function show() { 
+        wallpaperVisible = true
+        rescan()
+    }
+
     function hide() { wallpaperVisible = false }
+
+    function notifyNoWallpapers() {
+        notifyProc.running = true
+    }
 
     function rescan() {
         if (!scanProc.running) scanProc.running = true
@@ -152,23 +176,31 @@ QtObject {
     }
 
     function restoreWallpaper() {
-        if (currentWallpaper === "") return
-
         let path = currentWallpaper
 
-        if (path.startsWith("file://")) path = path.substring(7)
+        if (path === "") {
+            path = Quickshell.env("HOME") + "/.config/quickshell/assets/images/default-wallpaper.webp"
+
+            console.log("No saved wallpaper, using default:", path)
+
+            currentWallpaper = "file://" + path
+            saveWallpaper(path)
+        }
+        else if (path.startsWith("file://")) {
+            path = path.substring(7)
+        }
 
         console.log("Restoring wallpaper:", path)
 
         wallpaperProc.command = [
-            "awww", 
+            "awww",
             "img",
             "--transition-type", "random",
             "--transition-fps", "60",
             path
         ]
 
-        wallpaperProc.running = true 
+        wallpaperProc.running = true
         generateColors(path)
     }
 
