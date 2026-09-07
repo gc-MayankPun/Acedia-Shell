@@ -128,6 +128,122 @@ Canvas {
             ctx.arcTo(fw, fh, fw + r, fh, r)
             ctx.closePath()
             break
+
+        case "top-left":
+            // Exact 180° opposite of "bottom-right".
+            //
+            // Normal corner:
+            //   top-right
+            //
+            // Melted corners:
+            //   top-left
+            //   bottom-right
+            //
+            // Attached to:
+            //   top + left
+
+            // 1. Start after the normal top-right corner
+            ctx.moveTo(w - fw - r, h - fh)
+
+            // 2. Bottom edge toward the bottom-left melt
+            ctx.lineTo(fw, h - fh)
+
+            // 3. Bottom-left melt
+            ctx.quadraticCurveTo(0, h - fh, 0, h)
+
+            // 4. Left edge, flush with screen
+            ctx.lineTo(0, 0)
+
+            // 5. Top edge, flush with screen
+            ctx.lineTo(w, 0)
+
+            // 6. Top-right melt
+            ctx.quadraticCurveTo(w - fw, 0, w - fw, fh)
+
+            // 7. Right edge toward normal top-right corner
+            ctx.lineTo(w - fw, h - fh - r)
+
+            // 8. Normal top-right rounded corner
+            ctx.arcTo(w - fw, h - fh, w - fw - r, h - fh, r)
+
+            ctx.closePath()
+            break
+
+        case "top-right":
+            // Top + Right attached.
+            //
+            // Square corner (flush, hidden by both border strips): top-right
+            // Melts:
+            //   top-left     — top is attached, left isn't
+            //   bottom-right — right is attached, bottom isn't
+            // Normal corner:
+            //   bottom-left
+
+            // 1. Start after top-right square corner, along the flush top edge
+            ctx.moveTo(fw + r, fh)
+            // Wait — see note below; actually starts at bottom, mirroring bottom-right's moveTo
+            ctx.moveTo(fw + r, h - fh)
+
+            // 2. Bottom edge (inset by fh) toward bottom-right melt
+            ctx.lineTo(w - fw, h - fh)
+
+            // 3. Bottom-right melt
+            ctx.quadraticCurveTo(w, h - fh, w, h)
+
+            // 4. Right edge straight up, flush with screen
+            ctx.lineTo(w, 0)
+
+            // 5. Top edge straight left, flush with screen
+            ctx.lineTo(0, 0)
+
+            // 6. Top-left melt
+            ctx.quadraticCurveTo(fw, 0, fw, fh)
+
+            // 7. Left edge (inset by fw) down toward normal bottom-left corner
+            ctx.lineTo(fw, h - fh - r)
+
+            // 8. Normal bottom-left corner
+            ctx.arcTo(fw, h - fh, fw + r, h - fh, r)
+
+            ctx.closePath()
+            break
+
+        case "bottom-left":
+            // Bottom + Left attached.
+            //
+            // Square corner (flush, hidden by both border strips): bottom-left
+            // Melts:
+            //   top-left     — left is attached, top isn't
+            //   bottom-right — bottom is attached, right isn't
+            // Normal corner:
+            //   top-right
+
+            // 1. Start before normal top-right corner
+            ctx.moveTo(w - fw - r, fh)
+
+            // 2. Top edge (inset by fh — top not attached) toward top-left melt
+            ctx.lineTo(fw, fh)
+
+            // 3. Top-left melt
+            ctx.quadraticCurveTo(0, fh, 0, 0)
+
+            // 4. Left edge, flush with screen (left attached)
+            ctx.lineTo(0, h)
+
+            // 5. Bottom edge, flush with screen (bottom attached)
+            ctx.lineTo(w, h)
+
+            // 6. Bottom-right melt
+            ctx.quadraticCurveTo(w - fw, h, w - fw, h - fh)
+
+            // 7. Right edge (inset by fw) up toward normal top-right corner
+            ctx.lineTo(w - fw, fh + r)
+
+            // 8. Normal top-right corner
+            ctx.arcTo(w - fw, fh, w - fw - r, fh, r)
+
+            ctx.closePath()
+            break
         }
 
         ctx.fill()
