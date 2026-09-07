@@ -10,50 +10,50 @@ QtObject {
     readonly property string colorsPath: Quickshell.env("HOME") + "/.config/quickshell/config/colors.json"
 
     // Background
-    property color background
-    property color surface
-    property color surfaceVariant
+    property color background: "#1E1E2E"
+    property color surface: "#181825"
+    property color surfaceVariant: "#313244"
 
     // Surface levels
-    property color surfaceDim
-    property color surfaceBright
-    property color surfaceContainer
-    property color surfaceContainerLow
-    property color surfaceContainerHigh
-    property color surfaceContainerHighest
+    property color surfaceDim: "#14141F"
+    property color surfaceBright: "#45475A"
+    property color surfaceContainer: "#1C1C2B"
+    property color surfaceContainerLow: "#181824"
+    property color surfaceContainerHigh: "#252536"
+    property color surfaceContainerHighest: "#313244"
 
     // Text/content
-    property color text
-    property color textMuted
-    property color surfaceContent
+    property color text: "#CDD6F4"
+    property color textMuted: "#A6ADC8"
+    property color surfaceContent: "#CDD6F4"
 
     // Primary
-    property color primary
-    property color primaryContainer
-    property color primaryContent
-    property color primaryContainerContent
+    property color primary: "#89B4FA"
+    property color primaryContainer: "#1E3A5F"
+    property color primaryContent: "#FFFFFF"
+    property color primaryContainerContent: "#D6E4FF"
 
     // Secondary
-    property color secondary
-    property color secondaryContainer
-    property color secondaryContent
-    property color secondaryContainerContent
+    property color secondary: "#F5C2E7"
+    property color secondaryContainer: "#4A3045"
+    property color secondaryContent: "#FFFFFF"
+    property color secondaryContainerContent: "#FFD6F5"
 
     // Tertiary
-    property color tertiary
-    property color tertiaryContainer
-    property color tertiaryContent
-    property color tertiaryContainerContent
+    property color tertiary: "#94E2D5"
+    property color tertiaryContainer: "#254943"
+    property color tertiaryContent: "#FFFFFF"
+    property color tertiaryContainerContent: "#C8FFF6"
 
     // Outline
-    property color border
-    property color borderVariant
+    property color border: "#6C7086"
+    property color borderVariant: "#45475A"
 
     // Error
-    property color errorColor
-    property color errorContainer
-    property color errorContent
-    property color errorContainerContent
+    property color errorColor: "#F38BA8"
+    property color errorContainer: "#5C2636"
+    property color errorContent: "#FFFFFF"
+    property color errorContainerContent: "#FFD9E1"
  
     // JSON file
     property FileView colorFile: FileView {
