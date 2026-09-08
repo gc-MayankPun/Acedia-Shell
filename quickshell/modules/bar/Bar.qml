@@ -39,16 +39,16 @@ PanelWindow {
         z:1
     }
 
-    // BATTERY
-    Battery {
-        id: battery
+     // RIGHT BAR
+    RightBar {
+        id: rightBar
 
         anchors {
             verticalCenter: parent.verticalCenter
-            right: parent.right
+            right: parent.right 
         }
-        z:1
-    }
+        z: 1
+    } 
 
     // BAR SHAPE
     Components.SeamlessBarShape {

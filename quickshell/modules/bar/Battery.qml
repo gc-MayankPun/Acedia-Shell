@@ -6,9 +6,11 @@ import QtQuick.Layouts
 import "../../config" as Config
 
 Rectangle {
-    implicitWidth: root.implicitWidth + Config.Theme.barWidth
-    implicitHeight: root.implicitHeight + Config.Theme.barHeight
-    color: "transparent"
+    anchors.verticalCenter: parent.verticalCenter
+    implicitWidth: root.implicitWidth 
+    implicitHeight: root.implicitHeight
+    color: "transparent" 
+
 
     RowLayout {
         id: root
