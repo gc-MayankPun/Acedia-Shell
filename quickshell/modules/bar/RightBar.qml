@@ -3,8 +3,8 @@ import QtQuick
 import QtQuick.Layouts
 
 import "../../config" as Config 
-import "../network"
 import "../notifications"
+import "../settings"
 
 Rectangle {
     width: rightBar.width + Config.Theme.barWidth
@@ -16,7 +16,7 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 10
 
-        NetworkToggle {}
+        SettingsToggle {}
 
         NotificationToggle {}
 

@@ -1,7 +1,7 @@
 import Quickshell
 import QtQuick
 
-import "../../config" as Config
+import "../../config" as Config  
 
 Rectangle {
     id: root
@@ -12,7 +12,7 @@ Rectangle {
 
     Text {
         id: network
-        text: "\uf1eb"
+        text: "\uf013"
         color: mouse.containsMouse ? Config.Theme.primary : Config.Theme.text
         anchors.centerIn: parent
         font {
@@ -33,7 +33,7 @@ Rectangle {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
 
-            onClicked: NetworkState.toggle()
+            onClicked: SettingsState.toggle()
         }
     }
 }
