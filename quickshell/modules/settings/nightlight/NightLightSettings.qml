@@ -8,7 +8,6 @@ RowLayout {
     id: root
 
     anchors.fill: parent
-    // spacing: 10
 
     Rectangle {
         Layout.fillWidth: true
@@ -17,20 +16,11 @@ RowLayout {
         color: "transparent"
 
         ColumnLayout {
-            // anchors.fill: parent
-
-            // anchors.leftMargin: 10
-            // anchors.topMargin: 10
-            // anchors.rightMargin: 10
-            // anchors.bottomMargin: 10
-
-             width: 600
+            width: 600
 
             x: 10
             y: 10
 
-
-            // spacing: 14
             spacing: 20
 
             RowLayout {

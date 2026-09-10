@@ -7,6 +7,8 @@ import QtQuick
 Item {
     id: root
 
+    readonly property string scriptPath: Quickshell.env("HOME") + "/.config/quickshell/scripts/nightlight.sh"
+
     property bool enabled: false
     property int temperature: 4500
     property bool loading: false
@@ -16,10 +18,25 @@ Item {
     readonly property int maxTemperature: 6500
 
     Process {
-        id: setProcess
+        id: statusProcess
+
+        command: [root.scriptPath, "status"]
 
         stdout: StdioCollector {
-            onStreamFinished: {}
+            onStreamFinished: {
+                try {
+                    const data = JSON.parse(text)
+
+                    root.enabled = data.enabled
+                    root.temperature = data.temperature
+
+                    root.lastError = ""
+                } catch (e) {
+                    root.lastError = "Failed to parse nightlight status: " + e
+                }
+
+                root.loading = false
+            }
         }
 
         stderr: StdioCollector {
@@ -28,35 +45,29 @@ Item {
                     root.lastError = text.trim()
             }
         }
+    }
 
-        onExited: {
-            root.loading = false
-        }
+    Process {
+        id: actionProcess
+
+        onExited: root.update()
+    }
+
+    function update() {
+        root.loading = true
+        statusProcess.running = true
     }
 
     function enable() {
         root.loading = true
-        root.lastError = ""
-        root.enabled = true
-
-        setProcess.command = [
-            "bash",
-            "-lc",
-            "hyprsunset -t " + root.temperature
-        ]
-
-        setProcess.running = true
+        actionProcess.command = [root.scriptPath, "enable", String(root.temperature)]
+        actionProcess.running = true
     }
 
     function disable() {
         root.loading = true
-        root.lastError = ""
-        root.enabled = false
-
-        // -i resets to identity (no color filter)
-        setProcess.command = ["bash", "-lc", "hyprsunset -i"]
-
-        setProcess.running = true
+        actionProcess.command = [root.scriptPath, "disable"]
+        actionProcess.running = true
     }
 
     function toggle() {
@@ -72,14 +83,9 @@ Item {
             Math.min(root.maxTemperature, value)
         )
 
-        // Only push the new temperature live if already enabled
         if (root.enabled)
             enable()
     }
 
-    Component.onCompleted: {
-        // No reliable "query current state" IPC call in hyprsunset,
-        // so we assume off at startup. Adjust here if you always
-        // enable it via exec-once with a fixed default temperature.
-    }
+    Component.onCompleted: update()
 }

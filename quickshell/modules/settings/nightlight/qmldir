@@ -1,0 +1,2 @@
+singleton NightLightState 1.0 NightLightState.qml
+NightLightSettings 1.0 NightLightSettings.qml
