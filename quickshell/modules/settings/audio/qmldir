@@ -1,0 +1,2 @@
+singleton AudioState 1.0 AudioState.qml
+AudioSettings 1.0 AudioSettings.qml

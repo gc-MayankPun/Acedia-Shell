@@ -7,221 +7,97 @@ import QtQuick
 Item {
     id: root
 
-    property string defaultSink: ""
-    property string defaultSource: ""
+    readonly property string scriptPath: Quickshell.env("HOME") + "/.config/quickshell/scripts/audio.sh"
 
+    property string sinkName: ""
+    property string sinkDescription: "Unknown output"
     property int volume: 0
     property bool muted: false
 
-    property var sinks: []
-    property var sources: []
+    property string sourceName: ""
+    property string sourceDescription: "Unknown input"
+    property int micVolume: 0
+    property bool micMuted: false
 
-
-    // --------------------------------------------------
-    // Get default audio input volume
-    // --------------------------------------------------
-
-    Process {
-        id: sourceVolumeProcess
-
-        command: [
-            "wpctl",
-            "get-volume",
-            "@DEFAULT_AUDIO_SOURCE@"
-        ]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const output = text.trim()
-
-                console.log("Volume output:", output)
-
-                const match = output.match(
-                    /Volume:\s+([0-9.]+)/
-                )
-
-                if (!match)
-                    return
-
-                root.volume = Math.round(
-                    parseFloat(match[1]) * 100
-                )
-
-                root.muted = output.includes("[MUTED]")
-
-                console.log(
-                    "Audio volume:",
-                    root.volume
-                )
-
-                console.log(
-                    "Audio muted:",
-                    root.muted
-                )
-            }
-        }
-    }
-
-
-    // --------------------------------------------------
-    // Get audio devices
-    // --------------------------------------------------
+    property bool loading: false
+    property string lastError: ""
 
     Process {
         id: statusProcess
 
-        command: [
-            "wpctl",
-            "status"
-        ]
+        command: [root.scriptPath, "status"]
 
         stdout: StdioCollector {
             onStreamFinished: {
-                console.log("wpctl status:\n" + text)
+                try {
+                    const data = JSON.parse(text)
 
-                parseStatus(text)
+                    root.sinkName = data.sinkName
+                    root.sinkDescription = data.sinkDescription
+                    root.volume = data.volume
+                    root.muted = data.muted
+
+                    root.sourceName = data.sourceName
+                    root.sourceDescription = data.sourceDescription
+                    root.micVolume = data.micVolume
+                    root.micMuted = data.micMuted
+
+                    root.lastError = ""
+                } catch (e) {
+                    root.lastError = "Failed to parse audio status: " + e
+                }
+
+                root.loading = false
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.trim().length > 0)
+                    root.lastError = text.trim()
             }
         }
     }
 
+    Process {
+        id: actionProcess
 
-    // --------------------------------------------------
-    // Parse wpctl status
-    // --------------------------------------------------
-
-    function parseStatus(output) {
-    const lines = output.split("\n")
-
-    let section = ""
-    let audioSection = false
-
-    const newSources = []
-    const newSinks = []
-
-    root.defaultSource = ""
-    root.defaultSink = ""
-
-    for (const line of lines) {
-        const trimmed = line.trim()
-
-        if (trimmed === "Audio") {
-            audioSection = true
-            section = ""
-            continue
-        }
-
-        if (
-            trimmed === "Video" ||
-            trimmed === "Settings"
-        ) {
-            audioSection = false
-            section = ""
-            continue
-        }
-
-        if (!audioSection)
-            continue
-
-        if (trimmed.includes("Sinks:")) {
-            section = "sinks"
-            continue
-        }
-
-        if (trimmed.includes("Sources:")) {
-            section = "sources"
-            continue
-        }
-
-        if (
-            trimmed.includes("Filters:") ||
-            trimmed.includes("Streams:")
-        ) {
-            section = ""
-            continue
-        }
-
-        if (!section)
-            continue
-
-        const cleanLine = trimmed.replace(
-            /^[│├└─\s]+/,
-            ""
-        )
-
-        const match = cleanLine.match(
-            /^(\*)?\s*(\d+)\.\s+(.+)$/
-        )
-
-        if (!match)
-            continue
-
-        const isDefault = match[1] === "*"
-        const id = parseInt(match[2])
-        const name = match[3].trim()
-
-        const device = {
-            id: id,
-            name: name,
-            isDefault: isDefault
-        }
-
-        if (section === "sources") {
-            newSources.push(device)
-
-            if (isDefault)
-                root.defaultSource = name
-        }
-
-        if (section === "sinks") {
-            newSinks.push(device)
-
-            if (isDefault)
-                root.defaultSink = name
-        }
+        onExited: root.update()
     }
 
-    root.sources = newSources
-    root.sinks = newSinks
-}
-
-
-    // --------------------------------------------------
-    // Update
-    // --------------------------------------------------
-
-    function updateVolume() {
-        sourceVolumeProcess.running = true
-    }
-
-    function updateDevices() {
-        statusProcess.running = true
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: root.update()
     }
 
     function update() {
-    updateVolume()
-    updateDevices()
-}
-
-Timer {
-    interval: 500
-    running: true
-    repeat: true
-
-    onTriggered: {
-        updateVolume()
+        root.loading = true
+        statusProcess.running = true
     }
-}
 
-Component.onCompleted: {
-    update()
-}
+    function setVolume(percent) {
+        const clamped = Math.max(0, Math.min(100, Math.round(percent)))
+        actionProcess.command = [root.scriptPath, "volume", String(clamped)]
+        actionProcess.running = true
+    }
 
+    function toggleMute() {
+        actionProcess.command = [root.scriptPath, "mute-toggle"]
+        actionProcess.running = true
+    }
 
-    // --------------------------------------------------
-    // Initial update
-    // --------------------------------------------------
+    function setMicVolume(percent) {
+        const clamped = Math.max(0, Math.min(100, Math.round(percent)))
+        actionProcess.command = [root.scriptPath, "mic-volume", String(clamped)]
+        actionProcess.running = true
+    }
 
-    // Component.onCompleted: {
-    //     update()
-    // }
+    function toggleMicMute() {
+        actionProcess.command = [root.scriptPath, "mic-mute-toggle"]
+        actionProcess.running = true
+    }
+
+    Component.onCompleted: update()
 }
