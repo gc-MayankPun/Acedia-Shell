@@ -7,178 +7,103 @@ import QtQuick
 Item {
     id: root
 
+    readonly property string scriptPath: Quickshell.env("HOME") + "/.config/quickshell/scripts/bluetooth.sh"
+
+    property bool powered: false
     property var devices: []
     property var pairedDevices: []
     property var availableDevices: []
     property bool loading: false
-    property int infoIndex: 0
+    property string lastError: ""
 
-    // Persistent interactive bluetoothctl session. Commands are
-    // written to its stdin so the registered agent stays alive
-    // for the whole app session, instead of dying when a one-shot
-    // process exits (which is why pair/connect were failing).
+    property string pendingAddress: ""
+    property string pendingAction: ""
+
     Process {
-        id: ctl
+        id: statusProcess
 
-        command: ["bluetoothctl"]
-        running: true
-        stdinEnabled: true
+        command: [root.scriptPath, "status"]
 
-        // NOTE: verify against your Quickshell version — this
-        // assumes Process exposes write(text). If your version
-        // uses a different method/property for stdin, swap it in
-        // here; every call below goes through this one function.
-        function send(line) {
-            ctl.write(line + "\n")
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const data = JSON.parse(text)
+
+                    root.powered = data.powered
+                    root.devices = data.devices
+
+                    root.pairedDevices = data.devices.filter(d => d.paired)
+                    root.availableDevices = data.devices.filter(d => !d.paired)
+
+                    root.lastError = ""
+                } catch (e) {
+                    root.lastError = "Failed to parse bluetooth status: " + e
+                }
+
+                root.loading = false
+            }
         }
 
-        Component.onCompleted: {
-            send("agent NoInputNoOutput")
-            send("default-agent")
-            send("power on")
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.trim().length > 0)
+                    root.lastError = text.trim()
+            }
         }
     }
 
-    // Gives bluetoothctl a moment to process a command before
-    // we re-scan/refresh state.
-    Timer {
-        id: refreshTimer
-        interval: 2000
-        onTriggered: root.update()
-    }
-
     Process {
-        id: scanProcess
-
-        command: [
-            "bluetoothctl",
-            "--timeout",
-            "5",
-            "scan",
-            "on"
-        ]
+        id: actionProcess
 
         onExited: {
-            devicesProcess.running = true
+            root.pendingAddress = ""
+            root.pendingAction = ""
+            root.update()
         }
-    }
-
-    Process {
-        id: devicesProcess
-
-        command: [
-            "bluetoothctl",
-            "devices"
-        ]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const lines = text.trim().split("\n")
-                const newDevices = []
-
-                for (const line of lines) {
-                    const match = line.match(
-                        /^Device\s+([0-9A-Fa-f:]+)\s+(.+)$/
-                    )
-
-                    if (!match)
-                        continue
-
-                    newDevices.push({
-                        address: match[1],
-                        name: match[2],
-                        paired: false,
-                        connected: false
-                    })
-                }
-
-                root.devices = newDevices
-                root.infoIndex = 0
-                root.runNextInfo()
-            }
-        }
-    }
-
-    Process {
-        id: infoProcess
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const dev = root.devices[root.infoIndex]
-
-                if (dev) {
-                    dev.paired = /Paired:\s*yes/i.test(text)
-                    dev.connected = /Connected:\s*yes/i.test(text)
-                }
-
-                root.infoIndex++
-                root.runNextInfo()
-            }
-        }
-    }
-
-    function runNextInfo() {
-        if (root.infoIndex >= root.devices.length) {
-            finalizeDevices()
-            return
-        }
-
-        infoProcess.command = [
-            "bluetoothctl",
-            "info",
-            root.devices[root.infoIndex].address
-        ]
-
-        infoProcess.running = true
-    }
-
-    function finalizeDevices() {
-        const paired = []
-        const available = []
-
-        for (const device of root.devices) {
-            if (device.paired)
-                paired.push(device)
-            else
-                available.push(device)
-        }
-
-        root.pairedDevices = paired
-        root.availableDevices = available
-        root.loading = false
     }
 
     function update() {
         root.loading = true
-        scanProcess.running = true
+        statusProcess.running = true
+    }
+
+    function togglePower() {
+        actionProcess.command = [root.scriptPath, "power", root.powered ? "off" : "on"]
+        actionProcess.running = true
     }
 
     function scan() {
         root.loading = true
-        scanProcess.running = true
+        actionProcess.command = [root.scriptPath, "scan"]
+        actionProcess.running = true
     }
 
-    // pair/connect/disconnect now go through the persistent
-    // session so the registered agent actually applies to them.
     function pair(address) {
+        root.pendingAddress = address
+        root.pendingAction = "pairing"
         root.loading = true
-        ctl.send("pair " + address)
-        refreshTimer.restart()
+
+        actionProcess.command = [root.scriptPath, "pair", address]
+        actionProcess.running = true
     }
 
     function connect(address) {
+        root.pendingAddress = address
+        root.pendingAction = "connecting"
         root.loading = true
-        ctl.send("connect " + address)
-        refreshTimer.restart()
+
+        actionProcess.command = [root.scriptPath, "connect", address]
+        actionProcess.running = true
     }
 
     function disconnect(address) {
+        root.pendingAddress = address
+        root.pendingAction = "disconnecting"
         root.loading = true
-        ctl.send("disconnect " + address)
-        refreshTimer.restart()
+
+        actionProcess.command = [root.scriptPath, "disconnect", address]
+        actionProcess.running = true
     }
 
-    Component.onCompleted: {
-        update()
-    }
+    Component.onCompleted: update()
 }

@@ -10,55 +10,30 @@ RowLayout {
     anchors.fill: parent
     spacing: 10
 
-    property ListModel devicesModel: ListModel {} 
-
-    // onIsBluetoothChanged: rebuildDevices()
+    property ListModel devicesModel: ListModel {}
 
     function rebuildDevices() {
         devicesModel.clear()
- 
-            const seen = {}
 
-            for (const device of BluetoothState.pairedDevices) {
-                if (seen[device.address])
-                    continue
+        const seen = {}
 
-                seen[device.address] = true
+        for (const device of BluetoothState.pairedDevices) {
+            if (seen[device.address]) continue
+            seen[device.address] = true
+            devicesModel.append({ name: device.name, address: device.address, connected: device.connected, paired: true })
+        }
 
-                devicesModel.append({
-                    name: device.name,
-                    address: device.address,
-                    connected: device.connected,
-                    paired: true
-                })
-            }
-
-            for (const device of BluetoothState.availableDevices) {
-                if (seen[device.address])
-                    continue
-
-                seen[device.address] = true
-
-                devicesModel.append({
-                    name: device.name,
-                    address: device.address,
-                    connected: false,
-                    paired: false
-                })
-            }
-        
+        for (const device of BluetoothState.availableDevices) {
+            if (seen[device.address]) continue
+            seen[device.address] = true
+            devicesModel.append({ name: device.name, address: device.address, connected: false, paired: false })
+        }
     }
- 
+
     Connections {
         target: BluetoothState
-
-        function onPairedDevicesChanged() { 
-                root.rebuildDevices()
-        }
-
-        function onAvailableDevicesChanged() { 
-                root.rebuildDevices()
-        }
+        function onPairedDevicesChanged() { root.rebuildDevices() }
+        function onAvailableDevicesChanged() { root.rebuildDevices() }
     }
 
     Component.onCompleted: rebuildDevices()
@@ -81,6 +56,7 @@ RowLayout {
 
             RowLayout {
                 Layout.fillWidth: true
+                spacing: 8
 
                 Text {
                     Layout.fillWidth: true
@@ -95,9 +71,20 @@ RowLayout {
                     }
                 }
 
-                Rectangle {
-                    Layout.alignment: Qt.AlignRight
+                Text {
+                    visible: BluetoothState.loading
 
+                    text: "Refreshing…"
+
+                    color: Config.Theme.textMuted
+
+                    font {
+                        family: Config.Theme.fontFamily
+                        pixelSize: Config.Theme.fontSmall - 2
+                    }
+                }
+
+                Rectangle {
                     width: 30
                     height: 30
 
@@ -105,11 +92,8 @@ RowLayout {
 
                     Text {
                         anchors.centerIn: parent
-
                         text: "\udb81\udc53"
-
                         color: Config.Theme.text
-
                         font {
                             family: Config.Theme.fontFamily
                             pixelSize: Config.Theme.fontSize
@@ -118,14 +102,10 @@ RowLayout {
 
                     MouseArea {
                         anchors.fill: parent
-
                         acceptedButtons: Qt.LeftButton
                         propagateComposedEvents: false
-
                         cursorShape: Qt.PointingHandCursor
-
-                        onClicked: { BluetoothState.scan()
-                        }
+                        onClicked: { BluetoothState.scan() }
                     }
                 }
             }
@@ -146,6 +126,11 @@ RowLayout {
                         model: root.devicesModel
 
                         Rectangle {
+                            id: deviceRow
+
+                            readonly property bool isPending:
+                                BluetoothState.pendingAddress === address
+
                             Layout.fillWidth: true
                             height: 40
 
@@ -165,11 +150,8 @@ RowLayout {
 
                                 Text {
                                     anchors.centerIn: parent
-
                                     text: "\uf294"
-
                                     color: Config.Theme.text
-
                                     font {
                                         family: Config.Theme.fontFamily
                                         pixelSize: Config.Theme.fontSize
@@ -180,36 +162,27 @@ RowLayout {
                             ColumnLayout {
                                 anchors.left: deviceIcon.right
                                 anchors.leftMargin: 10
-
                                 anchors.right: deviceAction.left
                                 anchors.rightMargin: 10
-
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 spacing: 0
 
                                 Text {
                                     Layout.fillWidth: true
-
                                     text: name
-
                                     color: Config.Theme.text
-
                                     elide: Text.ElideRight
-
                                     font {
                                         family: Config.Theme.fontFamily
                                         pixelSize: Config.Theme.fontSmall - 1
                                     }
                                 }
 
-                                Text { 
+                                Text {
                                     text: address
-
                                     color: Config.Theme.textMuted
-
                                     elide: Text.ElideRight
-
                                     font {
                                         family: Config.Theme.fontFamily
                                         pixelSize: Config.Theme.fontSmall - 2
@@ -220,10 +193,13 @@ RowLayout {
                             Text {
                                 anchors.right: deviceAction.left
                                 anchors.rightMargin: 10
-
                                 anchors.verticalCenter: parent.verticalCenter
 
-                                text: connected ? "Connected" : paired ? "Paired" : "Available"
+                                text: deviceRow.isPending
+                                    ? (BluetoothState.pendingAction === "pairing" ? "Pairing…"
+                                        : BluetoothState.pendingAction === "connecting" ? "Connecting…"
+                                        : "Disconnecting…")
+                                    : (connected ? "Connected" : paired ? "Paired" : "Available")
 
                                 color: Config.Theme.batCharging
 
@@ -247,7 +223,9 @@ RowLayout {
                                 Text {
                                     anchors.centerIn: parent
 
-                                    text: connected ? "Disconnect" : paired ? "Connect" : "Pair"
+                                    text: deviceRow.isPending
+                                        ? "…"
+                                        : (connected ? "Disconnect" : paired ? "Connect" : "Pair")
 
                                     color: Config.Theme.batCharging
 
@@ -259,26 +237,19 @@ RowLayout {
 
                                 MouseArea {
                                     anchors.fill: parent
-
+                                    enabled: !deviceRow.isPending
                                     acceptedButtons: Qt.LeftButton
                                     propagateComposedEvents: false
-
                                     cursorShape: Qt.PointingHandCursor
 
                                     onClicked: {
                                         if (connected) {
-                                                BluetoothState.disconnect(
-                                                    address
-                                                )
-                                            } else if (paired) {
-                                                BluetoothState.connect(
-                                                    address
-                                                )
-                                            } else {
-                                                BluetoothState.pair(
-                                                    address
-                                                )
-                                            }
+                                            BluetoothState.disconnect(address)
+                                        } else if (paired) {
+                                            BluetoothState.connect(address)
+                                        } else {
+                                            BluetoothState.pair(address)
+                                        }
                                     }
                                 }
                             }
