@@ -1,0 +1,291 @@
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+
+import "../../../config" as Config
+
+RowLayout {
+    id: root
+
+    anchors.fill: parent
+    spacing: 10
+
+    property ListModel devicesModel: ListModel {} 
+
+    // onIsBluetoothChanged: rebuildDevices()
+
+    function rebuildDevices() {
+        devicesModel.clear()
+ 
+            const seen = {}
+
+            for (const device of BluetoothState.pairedDevices) {
+                if (seen[device.address])
+                    continue
+
+                seen[device.address] = true
+
+                devicesModel.append({
+                    name: device.name,
+                    address: device.address,
+                    connected: device.connected,
+                    paired: true
+                })
+            }
+
+            for (const device of BluetoothState.availableDevices) {
+                if (seen[device.address])
+                    continue
+
+                seen[device.address] = true
+
+                devicesModel.append({
+                    name: device.name,
+                    address: device.address,
+                    connected: false,
+                    paired: false
+                })
+            }
+        
+    }
+ 
+    Connections {
+        target: BluetoothState
+
+        function onPairedDevicesChanged() { 
+                root.rebuildDevices()
+        }
+
+        function onAvailableDevicesChanged() { 
+                root.rebuildDevices()
+        }
+    }
+
+    Component.onCompleted: rebuildDevices()
+
+    Rectangle {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        color: "transparent"
+
+        ColumnLayout {
+            anchors.fill: parent
+
+            anchors.leftMargin: 10
+            anchors.topMargin: 10
+            anchors.rightMargin: 10
+            anchors.bottomMargin: 10
+
+            spacing: 10
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Text {
+                    Layout.fillWidth: true
+
+                    text: "Bluetooth devices"
+
+                    color: Config.Theme.text
+
+                    font {
+                        family: Config.Theme.fontFamily
+                        pixelSize: Config.Theme.fontSmall
+                    }
+                }
+
+                Rectangle {
+                    Layout.alignment: Qt.AlignRight
+
+                    width: 30
+                    height: 30
+
+                    color: "transparent"
+
+                    Text {
+                        anchors.centerIn: parent
+
+                        text: "\udb81\udc53"
+
+                        color: Config.Theme.text
+
+                        font {
+                            family: Config.Theme.fontFamily
+                            pixelSize: Config.Theme.fontSize
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        acceptedButtons: Qt.LeftButton
+                        propagateComposedEvents: false
+
+                        cursorShape: Qt.PointingHandCursor
+
+                        onClicked: { BluetoothState.scan()
+                        }
+                    }
+                }
+            }
+
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                clip: true
+
+                ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
+                ColumnLayout {
+                    width: parent.width - 12
+                    spacing: 10
+
+                    Repeater {
+                        model: root.devicesModel
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 40
+
+                            color: "transparent"
+
+                            Rectangle {
+                                id: deviceIcon
+
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                width: 30
+                                height: 30
+
+                                color: Config.Theme.surfaceAlt
+                                radius: Config.Theme.radiusMedium
+
+                                Text {
+                                    anchors.centerIn: parent
+
+                                    text: "\uf294"
+
+                                    color: Config.Theme.text
+
+                                    font {
+                                        family: Config.Theme.fontFamily
+                                        pixelSize: Config.Theme.fontSize
+                                    }
+                                }
+                            }
+
+                            ColumnLayout {
+                                anchors.left: deviceIcon.right
+                                anchors.leftMargin: 10
+
+                                anchors.right: deviceAction.left
+                                anchors.rightMargin: 10
+
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                spacing: 0
+
+                                Text {
+                                    Layout.fillWidth: true
+
+                                    text: name
+
+                                    color: Config.Theme.text
+
+                                    elide: Text.ElideRight
+
+                                    font {
+                                        family: Config.Theme.fontFamily
+                                        pixelSize: Config.Theme.fontSmall - 1
+                                    }
+                                }
+
+                                Text { 
+                                    text: address
+
+                                    color: Config.Theme.textMuted
+
+                                    elide: Text.ElideRight
+
+                                    font {
+                                        family: Config.Theme.fontFamily
+                                        pixelSize: Config.Theme.fontSmall - 2
+                                    }
+                                }
+                            }
+
+                            Text {
+                                anchors.right: deviceAction.left
+                                anchors.rightMargin: 10
+
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                text: connected ? "Connected" : paired ? "Paired" : "Available"
+
+                                color: Config.Theme.batCharging
+
+                                font {
+                                    family: Config.Theme.fontFamily
+                                    pixelSize: Config.Theme.fontSmall - 2
+                                }
+                            }
+
+                            Rectangle {
+                                id: deviceAction
+
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                width: 75
+                                height: 30
+
+                                color: "transparent"
+
+                                Text {
+                                    anchors.centerIn: parent
+
+                                    text: connected ? "Disconnect" : paired ? "Connect" : "Pair"
+
+                                    color: Config.Theme.batCharging
+
+                                    font {
+                                        family: Config.Theme.fontFamily
+                                        pixelSize: Config.Theme.fontSmall - 2
+                                    }
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+
+                                    acceptedButtons: Qt.LeftButton
+                                    propagateComposedEvents: false
+
+                                    cursorShape: Qt.PointingHandCursor
+
+                                    onClicked: {
+                                        if (connected) {
+                                                BluetoothState.disconnect(
+                                                    address
+                                                )
+                                            } else if (paired) {
+                                                BluetoothState.connect(
+                                                    address
+                                                )
+                                            } else {
+                                                BluetoothState.pair(
+                                                    address
+                                                )
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

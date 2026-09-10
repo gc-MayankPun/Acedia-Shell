@@ -6,11 +6,14 @@ import QtQuick.Controls
 
 import "../../config" as Config
 import "../../components" as Components
+import "audio"
+import "wifi"
+import "bluetooth"
+import "nightlight"
+import "power"
 
 PanelWindow {
     id: root
- 
-    property bool isBluetooth: SettingsState.settingType === SettingsState.SettingType.Bluetooth
 
     WlrLayershell.layer: WlrLayer.Overlay
 
@@ -53,11 +56,11 @@ PanelWindow {
         id: bar
 
         anchors.verticalCenter: parent.verticalCenter
- 
-        width: columnLayout.implicitWidth + 40 
+
+        width: columnLayout.implicitWidth + 40
         height: columnLayout.implicitHeight + 70
 
-        x: SettingsState.isSettingsOpen   
+        x: SettingsState.isSettingsOpen
             ? parent.width - width
             : parent.width
 
@@ -78,14 +81,14 @@ PanelWindow {
 
             flareWidth: 18
             flareHeight: 18
-        } 
+        }
 
         ColumnLayout {
-            id: columnLayout 
+            id: columnLayout
 
             x: 20
             y: 30
- 
+
             spacing: 10
 
             Text {
@@ -164,8 +167,8 @@ PanelWindow {
 
                     sourceComponent: {
                         switch (SettingsState.settingType) {
-                            case SettingsState.SettingType.Wifi: return wifiBluetooth
-                            case SettingsState.SettingType.Bluetooth: return wifiBluetooth
+                            case SettingsState.SettingType.Wifi: return wifi
+                            case SettingsState.SettingType.Bluetooth: return bluetooth
                             case SettingsState.SettingType.Audio: return audio
                             case SettingsState.SettingType.NightLight: return nightLight
                             case SettingsState.SettingType.BatteryMode: return batteryMode
@@ -175,8 +178,13 @@ PanelWindow {
                 }
 
                 Component {
-                    id: wifiBluetooth
-                    WifiBluetooth {}
+                    id: wifi
+                    Wifi {}
+                }
+
+                Component {
+                    id: bluetooth
+                    Bluetooth {}
                 }
 
                 Component {
@@ -194,6 +202,6 @@ PanelWindow {
                     BatteryModeSettings {}
                 }
             }
-        } 
+        }
     }
 }

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
-import "../../config" as Config
+import "../../../config" as Config
 
 Rectangle {
     color: "transparent"
@@ -22,7 +22,7 @@ Rectangle {
             }
 
             Text {
-                text: "1 available"
+                text: AudioState.sources.length + " available"
                 color: Config.Theme.textMuted
                 font {
                     family: Config.Theme.fontFamily
@@ -44,8 +44,9 @@ Rectangle {
                 Rectangle {
                     color: Config.Theme.primary
                     height: 35
-                    width: 200
+                    width: (parent.width - 10) * AudioState.volume / 100
                     radius: Config.Theme.radiusPill
+
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left 
                     anchors.leftMargin: 5
@@ -54,20 +55,25 @@ Rectangle {
                         anchors.leftMargin: 15
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
+
                         text: "\uec1c"
-                        color: serviceStatus === "On" ? Config.Theme.surface : Config.Theme.textMuted
+
+                        color: AudioState.muted
+                            ? Config.Theme.textMuted
+                            : Config.Theme.surface
+
                         font {
                             family: Config.Theme.fontFamily
                             pixelSize: Config.Theme.fontSize
                         }
                     }
-                }
+                }       
 
                 Text {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: 15
-                    text: "65%"
+                    text: AudioState.volume + "%"
                     color: Config.Theme.text
                     font {
                         family: Config.Theme.fontFamily
@@ -77,7 +83,10 @@ Rectangle {
             }
         }
 
-        Item {
+        Repeater {
+            model: AudioState.sources
+
+            Item {
             height: 40
             Layout.fillWidth: true
 
@@ -116,7 +125,8 @@ Rectangle {
                         }
 
                         Text {
-                            text: "Ryzen HD Audio Controller Analog Stereo"
+                            // text: AudioState.sources.length > 0 ? AudioState.sources[0].name : "No audio input"
+                            text: modelData.name
                             color: Config.Theme.text
                             font {
                                 family: Config.Theme.fontFamily
@@ -130,8 +140,14 @@ Rectangle {
                     Text {
                         anchors.right: parent.right
                         anchors.rightMargin: 10
+
+                        // visible: AudioState.sources.length > 0 && AudioState.sources[0].isDefault
+                        visible: modelData.isDefault
+
                         text: "Selected"
+
                         color: Config.Theme.batCharging
+
                         font {
                             family: Config.Theme.fontFamily
                             pixelSize: Config.Theme.fontSmall - 1
@@ -139,6 +155,7 @@ Rectangle {
                     }
                 }
             }
+        }
         }
     }
 }
