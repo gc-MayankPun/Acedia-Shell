@@ -24,7 +24,6 @@ PanelWindow {
 
     WlrLayershell.namespace: "settings-popup"
 
-    // Full screen so we can detect clicks outside
     anchors {
         left: true
         right: true
@@ -36,12 +35,10 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
 
-    // Only the launcher itself receives input
     mask: Region {
         item: SettingsState.isSettingsOpen ? bar : null
     }
 
-    // Outside click
     MouseArea {
         anchors.fill: parent
         enabled: SettingsState.isSettingsOpen
@@ -104,30 +101,52 @@ PanelWindow {
                 spacing: 10
 
                 ServiceCapsule {
-                    serviceSignal: "\uf1eb"
+                    serviceSignal: WifiState.radioEnabled ? "\udb82\udd28" : "\udb82\udd2d"
                     serviceName: "Wi-Fi"
-                    serviceStatus: "On"
-                    connectedDevice: "gc_mayankpun"
+
+                    serviceStatus: WifiState.radioEnabled ? "On" : "Off"
+
+                    connectedDevice: {
+                        const connected = WifiState.savedNetworks
+                            .concat(WifiState.availableNetworks)
+                            .find(n => n.isConnected)
+
+                        return connected ? connected.name : "No network connected"
+                    }
 
                     settingType: SettingsState.SettingType.Wifi
+
+                    onIconClicked: WifiState.toggleRadio()
                 }
 
                 ServiceCapsule {
-                    serviceSignal: "\uefcf"
+                    serviceSignal: AudioState.muted ? "\udb81\udfce" : "\udb80\udecb"
                     serviceName: "Audio"
-                    serviceStatus: "On"
-                    connectedDevice: "Laptop Speaker"
+
+                    serviceStatus: AudioState.muted ? "Muted" : "On"
+
+                    connectedDevice:
+                        AudioState.sinkDescription + " · " + AudioState.volume + "%"
 
                     settingType: SettingsState.SettingType.Audio
+
+                    onIconClicked: AudioState.toggleMute()
                 }
 
                 ServiceCapsule {
                     serviceSignal: "\uf294"
                     serviceName: "Bluetooth"
-                    serviceStatus: "On"
-                    connectedDevice: "Toad One"
+
+                    serviceStatus: BluetoothState.powered ? "On" : "Off"
+
+                    connectedDevice: {
+                        const connected = BluetoothState.pairedDevices.find(d => d.connected)
+                        return connected ? connected.name : "No device connected"
+                    }
 
                     settingType: SettingsState.SettingType.Bluetooth
+
+                    onIconClicked: BluetoothState.togglePower()
                 }
             }
 
@@ -137,22 +156,36 @@ PanelWindow {
                 ServiceCapsule {
                     serviceSignal: "\udb81\udd94"
                     serviceName: "Night Light"
-                    serviceStatus: "Off"
+
+                    serviceStatus: NightLightState.enabled ? "On" : "Off"
+
+                    connectedDevice: NightLightState.enabled
+                        ? NightLightState.temperature + "K"
+                        : "Off"
 
                     settingType: SettingsState.SettingType.NightLight
 
                     capsuleWidth: 305
+
+                    onIconClicked: NightLightState.toggle()
                 }
 
                 ServiceCapsule {
                     serviceSignal: "\udb80\udc79"
                     serviceName: "Power Mode"
+
                     serviceStatus: "On"
-                    connectedDevice: "On power mode"
+
+                    connectedDevice: {
+                        const meta = BatteryState.profileMeta[BatteryState.activeProfile]
+                        return meta ? meta.label : BatteryState.activeProfile
+                    }
 
                     settingType: SettingsState.SettingType.BatteryMode
 
                     capsuleWidth: 305
+
+                    onIconClicked: BatteryState.cycleProfile()
                 }
             }
 

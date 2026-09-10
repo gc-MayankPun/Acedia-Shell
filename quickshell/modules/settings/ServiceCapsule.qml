@@ -11,12 +11,18 @@ Rectangle {
     property int capsuleWidth: 200
     property int settingType: SettingsState.SettingType.Wifi
 
-    signal servicePerform
+    // Emitted when the icon itself is clicked — parent decides
+    // what "toggle" means for this specific service.
+    signal iconClicked()
+
+    id: root
 
     radius: Config.Theme.radiusMedium
     color: serviceStatus === "On" ? Config.Theme.primary : Config.Theme.primaryBright
     border.width: 1
-    border.color: serviceMouse.containsMouse ? Config.Theme.tertiary : "tertiary"
+    border.color: (iconMouse.containsMouse || arrowMouse.containsMouse)
+        ? Config.Theme.tertiary
+        : "transparent"
 
     Layout.preferredWidth: capsuleWidth
     Layout.preferredHeight: 60
@@ -25,15 +31,18 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 10
 
+        // ICON ZONE — toggles the service, does not open settings
         Rectangle {
+            id: iconRect
+
             Layout.preferredWidth: 40
             Layout.preferredHeight: 40
 
-            color: Config.Theme.surface 
+            color: Config.Theme.surface
             opacity: serviceStatus === "On" ? 1 : 0.5
             radius: Config.Theme.radiusPill
 
-            Text { 
+            Text {
                 text: serviceSignal
                 anchors.centerIn: parent
                 color: Config.Theme.text
@@ -42,68 +51,83 @@ Rectangle {
                     pixelSize: Config.Theme.fontSize
                 }
             }
-        }
 
-        ColumnLayout {
-            spacing: 0
+            MouseArea {
+                id: iconMouse
 
-            Text {
-                text: serviceName
-                color: serviceStatus === "On" ? Config.Theme.surface : Config.Theme.text
-                font {
-                    family: Config.Theme.fontFamily
-                    pixelSize: Config.Theme.fontSmall
-                    bold: true
-                }
-            }
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
 
-            Text {
-                text: serviceStatus === "On" ? connectedDevice || serviceStatus : serviceStatus
-                color: serviceStatus === "On" ? Config.Theme.surfaceAlt : Config.Theme.textMuted
-                font {
-                    family: Config.Theme.fontFamily
-                    pixelSize: Config.Theme.fontSmall - 1
-                }
-
-                Layout.fillWidth: true
-                elide: Text.ElideRight
-                wrapMode: Text.NoWrap
+                onClicked: root.iconClicked()
             }
         }
 
-        Item {
-            Layout.fillWidth: true
-        }
-
+        // INFO + ARROW ZONE — opens the settings panel
         RowLayout {
-            spacing:10
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 10
 
-            Rectangle {
-                Layout.preferredWidth: 1
-                Layout.preferredHeight: 30
+            ColumnLayout {
+                spacing: 0
+                Layout.fillWidth: true
 
-                color: serviceStatus === "On" ? Config.Theme.surface : Config.Theme.tertiary
-            }
+                Text {
+                    text: serviceName
+                    color: serviceStatus === "On" ? Config.Theme.surface : Config.Theme.text
+                    font {
+                        family: Config.Theme.fontFamily
+                        pixelSize: Config.Theme.fontSmall
+                        bold: true
+                    }
+                }
 
-            Text {
-                text: "\ueab4"
-                color: serviceStatus === "On" ? Config.Theme.surface : Config.Theme.textMuted 
-                font {
-                    family: Config.Theme.fontFamily
-                    pixelSize: Config.Theme.fontSmall - 1
+                Text {
+                    text: serviceStatus === "On" ? connectedDevice || serviceStatus : serviceStatus
+                    color: serviceStatus === "On" ? Config.Theme.surfaceAlt : Config.Theme.textMuted
+                    font {
+                        family: Config.Theme.fontFamily
+                        pixelSize: Config.Theme.fontSmall - 1
+                    }
+
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                    wrapMode: Text.NoWrap
                 }
             }
-        }
-    }
 
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor 
+            RowLayout {
+                spacing: 10
 
-        onClicked: { 
-            SettingsState.selectSetting(settingType)
-            servicePerform()
+                Rectangle {
+                    Layout.preferredWidth: 1
+                    Layout.preferredHeight: 30
+
+                    color: serviceStatus === "On" ? Config.Theme.surface : Config.Theme.tertiary
+                }
+
+                Text {
+                    text: "\ueab4"
+                    color: serviceStatus === "On" ? Config.Theme.surface : Config.Theme.textMuted
+                    font {
+                        family: Config.Theme.fontFamily
+                        pixelSize: Config.Theme.fontSmall - 1
+                    }
+                }
+            }
+
+            MouseArea {
+                id: arrowMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+
+                onClicked: {
+                    SettingsState.selectSetting(settingType)
+                }
+            }
         }
     }
 }

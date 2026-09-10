@@ -1,6 +1,7 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Hyprland
 import QtQuick
 
 QtObject {
@@ -22,10 +23,12 @@ QtObject {
 
     function show() {
         isSettingsOpen = true
+        Hyprland.dispatch("settings-blur off")
     }
 
     function hide() {
         isSettingsOpen = false
+        Hyprland.dispatch("settings-blur on")
     }
 
     function selectSetting(type) {
