@@ -1,0 +1,2 @@
+singleton BatteryState 1.0 BatteryState.qml
+BatteryModeSettings 1.0 BatteryModeSettings.qml

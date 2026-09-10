@@ -8,30 +8,20 @@ RowLayout {
     id: root
 
     anchors.fill: parent
-    // spacing: 10
 
     Rectangle {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
         color: "transparent"
-        // color: "red"
 
         ColumnLayout {
-            // anchors.fill: parent
-            // height: 500
             width: 600
 
             x: 10
             y: 10
 
-            // anchors.leftMargin: 10
-            // anchors.topMargin: 10
-            // anchors.rightMargin: 10
-            // anchors.bottomMargin: 10
-
             spacing: 20
-            // spacing: -50
 
             RowLayout {
                 Layout.fillWidth: true
@@ -63,63 +53,7 @@ RowLayout {
                         pixelSize: Config.Theme.fontSmall - 2
                     }
                 }
-
-                // Rectangle {
-                //     width: 30
-                //     height: 30
-
-                //     color: "transparent"
-
-                //     Text {
-                //         anchors.centerIn: parent
-
-                //         text: "\udb81\udc53"
-
-                //         color: Config.Theme.text
-
-                //         font {
-                //             family: Config.Theme.fontFamily
-                //             pixelSize: Config.Theme.fontSize
-                //         }
-
-                //         RotationAnimation on rotation {
-                //             running: BatteryState.loading
-                //             loops: Animation.Infinite
-                //             from: 0
-                //             to: 360
-                //             duration: 900
-                //         }
-                //     }
-
-                //     MouseArea {
-                //         anchors.fill: parent
-
-                //         acceptedButtons: Qt.LeftButton
-                //         propagateComposedEvents: false
-
-                //         cursorShape: Qt.PointingHandCursor
-
-                //         onClicked: { BatteryState.update() }
-                //     }
-                // }
             }
-
-            // Text {
-            //     visible: BatteryState.lastError.length > 0
-
-            //     Layout.fillWidth: true
-
-            //     text: BatteryState.lastError
-
-            //     color: "#e06060"
-
-            //     wrapMode: Text.WordWrap
-
-            //     font {
-            //         family: Config.Theme.fontFamily
-            //         pixelSize: Config.Theme.fontSmall - 2
-            //     }
-            // }
 
             ColumnLayout {
                 Layout.fillWidth: true

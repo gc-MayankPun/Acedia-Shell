@@ -7,6 +7,8 @@ import QtQuick
 Item {
     id: root
 
+    readonly property string scriptPath: Quickshell.env("HOME") + "/.config/quickshell/scripts/battery.sh"
+
     property var profiles: []
     property string activeProfile: ""
     property bool loading: false
@@ -31,36 +33,25 @@ Item {
     })
 
     Process {
-        id: listProcess
+        id: statusProcess
 
-        command: ["bash", "-lc", "powerprofilesctl list"]
+        command: [root.scriptPath, "status"]
 
         stdout: StdioCollector {
             onStreamFinished: {
-                const lines = text.split("\n")
-                const found = []
-                let current = ""
+                try {
+                    const data = JSON.parse(text)
 
-                for (const line of lines) {
-                    const match = line.match(/^(\*)?\s*([\w-]+):\s*$/)
+                    root.profiles = data.profiles
+                    root.activeProfile = data.activeProfile
 
-                    if (!match)
-                        continue
-
-                    const isActive = !!match[1]
-                    const name = match[2]
-
-                    found.push(name)
-
-                    if (isActive)
-                        current = name
+                    root.lastError = data.profiles.length === 0
+                        ? "No profiles detected."
+                        : ""
+                } catch (e) {
+                    root.lastError = "Failed to parse battery status: " + e
                 }
 
-                root.profiles = found
-                root.activeProfile = current
-                root.lastError = found.length === 0
-                    ? "No profiles detected. Is power-profiles-daemon installed and running?"
-                    : ""
                 root.loading = false
             }
         }
@@ -74,43 +65,31 @@ Item {
     }
 
     Process {
-        id: setProcess
+        id: actionProcess
 
-        stdout: StdioCollector {
-            onStreamFinished: {}
-        }
-
-        stderr: StdioCollector {
-            onStreamFinished: {
-                if (text.trim().length > 0)
-                    root.lastError = text.trim()
-            }
-        }
-
-        onExited: {
-            root.update()
-        }
+        onExited: root.update()
     }
 
     function update() {
         root.loading = true
-        listProcess.running = true
+        statusProcess.running = true
     }
 
     function setProfile(name) {
         root.loading = true
-        root.lastError = ""
-
-        setProcess.command = [
-            "bash",
-            "-lc",
-            "powerprofilesctl set " + name
-        ]
-
-        setProcess.running = true
+        actionProcess.command = [root.scriptPath, "set", name]
+        actionProcess.running = true
     }
 
-    Component.onCompleted: {
-        update()
+    function cycleProfile() {
+        if (root.profiles.length === 0)
+            return
+
+        const idx = root.profiles.indexOf(root.activeProfile)
+        const nextIdx = (idx + 1) % root.profiles.length
+
+        root.setProfile(root.profiles[nextIdx])
     }
+
+    Component.onCompleted: update()
 }
