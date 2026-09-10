@@ -9,6 +9,7 @@ Rectangle {
     property string serviceStatus: "Off"
     property string connectedDevice: ""
     property int capsuleWidth: 200
+    property int settingType: SettingsState.SettingType.Wifi
 
     signal servicePerform
 
@@ -96,13 +97,12 @@ Rectangle {
     }
 
     MouseArea {
-        id: serviceMouse
-
         anchors.fill: parent
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: Qt.PointingHandCursor 
 
-        onClicked: {
+        onClicked: { 
+            SettingsState.selectSetting(settingType)
             servicePerform()
         }
     }

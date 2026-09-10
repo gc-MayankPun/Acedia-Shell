@@ -9,6 +9,8 @@ import "../../components" as Components
 
 PanelWindow {
     id: root
+ 
+    property bool isBluetooth: SettingsState.settingType === SettingsState.SettingType.Bluetooth
 
     WlrLayershell.layer: WlrLayer.Overlay
 
@@ -52,10 +54,10 @@ PanelWindow {
 
         anchors.verticalCenter: parent.verticalCenter
  
-        width: columnLayout.implicitWidth + 40
-        height: columnLayout.implicitHeight + 120
+        width: columnLayout.implicitWidth + 40 
+        height: columnLayout.implicitHeight + 70
 
-        x: SettingsState.isSettingsOpen 
+        x: SettingsState.isSettingsOpen   
             ? parent.width - width
             : parent.width
 
@@ -96,51 +98,101 @@ PanelWindow {
             }
 
             RowLayout {
-                id: row1
                 spacing: 10
-                
+
                 ServiceCapsule {
                     serviceSignal: "\uf1eb"
                     serviceName: "Wi-Fi"
                     serviceStatus: "On"
                     connectedDevice: "gc_mayankpun"
 
-                    onServicePerform: SettingsState.hide()
+                    settingType: SettingsState.SettingType.Wifi
                 }
-                
+
                 ServiceCapsule {
                     serviceSignal: "\uefcf"
                     serviceName: "Audio"
-                    serviceStatus: "On" 
-                    connectedDevice: "Laptop Speakerawfaf awfaw wf awf"
+                    serviceStatus: "On"
+                    connectedDevice: "Laptop Speaker"
+
+                    settingType: SettingsState.SettingType.Audio
                 }
-                
+
                 ServiceCapsule {
                     serviceSignal: "\uf294"
                     serviceName: "Bluetooth"
                     serviceStatus: "On"
                     connectedDevice: "Toad One"
+
+                    settingType: SettingsState.SettingType.Bluetooth
                 }
             }
 
             RowLayout {
-                id: row2
                 spacing: 10
 
                 ServiceCapsule {
                     serviceSignal: "\udb81\udd94"
-                    serviceName: "Night Light" 
+                    serviceName: "Night Light"
                     serviceStatus: "Off"
+
+                    settingType: SettingsState.SettingType.NightLight
+
                     capsuleWidth: 305
-                }  
+                }
 
                 ServiceCapsule {
                     serviceSignal: "\udb80\udc79"
-                    serviceName: "Power Mode" 
-                    serviceStatus: "On" 
-                    capsuleWidth: 305
+                    serviceName: "Power Mode"
+                    serviceStatus: "On"
                     connectedDevice: "On power mode"
-                } 
+
+                    settingType: SettingsState.SettingType.BatteryMode
+
+                    capsuleWidth: 305
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 300
+                radius: Config.Theme.radiusMedium
+                color: Config.Theme.primaryBright
+
+                Loader {
+                    anchors.fill: parent
+
+                    sourceComponent: {
+                        switch (SettingsState.settingType) {
+                            case SettingsState.SettingType.Wifi: return wifiBluetooth
+                            case SettingsState.SettingType.Bluetooth: return wifiBluetooth
+                            case SettingsState.SettingType.Audio: return audio
+                            case SettingsState.SettingType.NightLight: return nightLight
+                            case SettingsState.SettingType.BatteryMode: return batteryMode
+                            default: return null
+                        }
+                    }
+                }
+
+                Component {
+                    id: wifiBluetooth
+                    WifiBluetooth {}
+                }
+
+                Component {
+                    id: audio
+                    AudioSettings {}
+                }
+
+                Component {
+                    id: nightLight
+                    NightLightSettings {}
+                }
+
+                Component {
+                    id: batteryMode
+                    BatteryModeSettings {}
+                }
             }
         } 
     }
