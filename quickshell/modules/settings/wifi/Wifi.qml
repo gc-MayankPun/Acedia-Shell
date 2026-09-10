@@ -10,7 +10,7 @@ RowLayout {
     anchors.fill: parent
     spacing: 10
 
-    property ListModel devicesModel: ListModel {}  
+    property ListModel devicesModel: ListModel {}
 
     function rebuildDevices() {
         devicesModel.clear()
@@ -19,35 +19,21 @@ RowLayout {
 
         for (const network of WifiState.savedNetworks) {
             if (!network.name || seen[network.name]) continue
-
             seen[network.name] = true
-
-            devicesModel.append({
-                name: network.name,
-                isConnected: network.isConnected
-            })
+            devicesModel.append({ name: network.name, isConnected: network.isConnected })
         }
 
         for (const network of WifiState.availableNetworks) {
             if (!network.name || seen[network.name]) continue
-
             seen[network.name] = true
-
-            devicesModel.append({
-                name: network.name,
-                isConnected: network.isConnected
-            })
+            devicesModel.append({ name: network.name, isConnected: network.isConnected })
         }
-        
     }
 
     Connections {
         target: WifiState
-
         function onSavedNetworksChanged() { root.rebuildDevices() }
-
         function onAvailableNetworksChanged() { root.rebuildDevices() }
-
         function onNetworksChanged() { root.rebuildDevices() }
     }
 
@@ -71,6 +57,7 @@ RowLayout {
 
             RowLayout {
                 Layout.fillWidth: true
+                spacing: 8
 
                 Text {
                     Layout.fillWidth: true
@@ -85,9 +72,20 @@ RowLayout {
                     }
                 }
 
-                Rectangle {
-                    Layout.alignment: Qt.AlignRight
+                Text {
+                    visible: WifiState.loading
 
+                    text: "Refreshing…"
+
+                    color: Config.Theme.textMuted
+
+                    font {
+                        family: Config.Theme.fontFamily
+                        pixelSize: Config.Theme.fontSmall - 2
+                    }
+                }
+
+                Rectangle {
                     width: 30
                     height: 30
 
@@ -108,12 +106,9 @@ RowLayout {
 
                     MouseArea {
                         anchors.fill: parent
-
                         acceptedButtons: Qt.LeftButton
                         propagateComposedEvents: false
-
                         cursorShape: Qt.PointingHandCursor
-
                         onClicked: { WifiState.update() }
                     }
                 }
@@ -135,6 +130,11 @@ RowLayout {
                         model: root.devicesModel
 
                         Rectangle {
+                            id: deviceRow
+
+                            readonly property bool isPending:
+                                WifiState.pendingNetwork === name
+
                             Layout.fillWidth: true
                             height: 40
 
@@ -154,11 +154,8 @@ RowLayout {
 
                                 Text {
                                     anchors.centerIn: parent
-
                                     text: "\uf1eb"
-
                                     color: Config.Theme.text
-
                                     font {
                                         family: Config.Theme.fontFamily
                                         pixelSize: Config.Theme.fontSize
@@ -169,23 +166,17 @@ RowLayout {
                             ColumnLayout {
                                 anchors.left: deviceIcon.right
                                 anchors.leftMargin: 10
-
                                 anchors.right: deviceAction.left
                                 anchors.rightMargin: 10
-
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 spacing: 0
 
                                 Text {
                                     Layout.fillWidth: true
-
                                     text: name
-
                                     color: Config.Theme.text
-
                                     elide: Text.ElideRight
-
                                     font {
                                         family: Config.Theme.fontFamily
                                         pixelSize: Config.Theme.fontSmall - 1
@@ -196,12 +187,15 @@ RowLayout {
                             Text {
                                 anchors.right: deviceAction.left
                                 anchors.rightMargin: 10
-
                                 anchors.verticalCenter: parent.verticalCenter
 
-                                text: isConnected ? "Connected" : "Available"
+                                text: deviceRow.isPending
+                                    ? (WifiState.pendingAction === "connecting" ? "Connecting…" : "Disconnecting…")
+                                    : (isConnected ? "Connected" : "Available")
 
-                                color: Config.Theme.textMuted
+                                color: deviceRow.isPending
+                                    ? Config.Theme.textMuted
+                                    : (isConnected ? Config.Theme.batCharging : Config.Theme.textMuted)
 
                                 font {
                                     family: Config.Theme.fontFamily
@@ -223,7 +217,9 @@ RowLayout {
                                 Text {
                                     anchors.centerIn: parent
 
-                                    text: isConnected ? "Disconnect" : "Connect"
+                                    text: deviceRow.isPending
+                                        ? "…"
+                                        : (isConnected ? "Disconnect" : "Connect")
 
                                     color: Config.Theme.batCharging
 
@@ -235,10 +231,9 @@ RowLayout {
 
                                 MouseArea {
                                     anchors.fill: parent
-
+                                    enabled: !deviceRow.isPending
                                     acceptedButtons: Qt.LeftButton
                                     propagateComposedEvents: false
-
                                     cursorShape: Qt.PointingHandCursor
 
                                     onClicked: {
@@ -246,7 +241,7 @@ RowLayout {
                                             WifiState.disconnect()
                                         } else {
                                             WifiState.connect(name)
-                                        } 
+                                        }
                                     }
                                 }
                             }

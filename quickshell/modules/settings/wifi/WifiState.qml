@@ -7,274 +7,103 @@ import QtQuick
 Item {
     id: root
 
+    readonly property string scriptPath: Quickshell.env("HOME") + "/.config/quickshell/scripts/wifi.sh"
+
+    property bool radioEnabled: true
     property var networks: []
     property var savedNetworks: []
     property var availableNetworks: []
     property bool loading: false
-    property string wifiDevice: ""
+    property string lastError: ""
+
+    // Tracks an in-flight connect/disconnect so the UI can show
+    // "Connecting…" / "Disconnecting…" on the right row.
+    property string pendingNetwork: ""
+    property string pendingAction: ""
 
     Process {
-        id: savedProcess
+        id: statusProcess
 
-        command: [
-            "nmcli",
-            "-t",
-            "-e",
-            "no",
-            "-f",
-            "NAME,TYPE",
-            "connection",
-            "show"
-        ]
+        command: [root.scriptPath, "status"]
 
         stdout: StdioCollector {
             onStreamFinished: {
-                const lines = text.trim().split("\n")
-                const saved = []
+                try {
+                    const data = JSON.parse(text)
 
-                for (const line of lines) {
-                    if (!line)
-                        continue
+                    root.radioEnabled = data.radioEnabled
+                    root.networks = data.networks
 
-                    const separator = line.lastIndexOf(":")
+                    root.savedNetworks = data.networks.filter(n => n.isSaved)
+                    root.availableNetworks = data.networks.filter(n => !n.isSaved)
 
-                    if (separator === -1)
-                        continue
-
-                    const name = line.slice(0, separator).trim()
-                    const type = line.slice(separator + 1).trim()
-
-                    if (type !== "802-11-wireless")
-                        continue
-
-                    if (!name)
-                        continue
-
-                    if (saved.some(network => network.name === name))
-                        continue
-
-                    saved.push({
-                        name: name,
-                        isConnected: false
-                    })
+                    root.lastError = ""
+                } catch (e) {
+                    root.lastError = "Failed to parse wifi status: " + e
                 }
 
-                root.savedNetworks = saved
-                scanProcess.running = true
-            }
-        }
-    }
-
-    Process {
-        id: scanProcess
-
-        command: [
-            "nmcli",
-            "device",
-            "wifi",
-            "rescan"
-        ]
-
-        onExited: {
-            wifiProcess.running = true
-        }
-    }
-
-    Process {
-        id: wifiProcess
-
-        command: [
-            "nmcli",
-            "-t",
-            "-e",
-            "no",
-            "-f",
-            "IN-USE,SSID,SIGNAL,SECURITY",
-            "device",
-            "wifi",
-            "list"
-        ]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const lines = text.trim().split("\n")
-                const visible = []
-
-                for (const line of lines) {
-                    if (!line)
-                        continue
-
-                    const parts = line.split(":")
-
-                    if (parts.length < 4)
-                        continue
-
-                    const inUse = parts[0]
-                    const security = parts[parts.length - 1]
-                    const signal = parts[parts.length - 2]
-                    const name = parts
-                        .slice(1, parts.length - 2)
-                        .join(":")
-                        .trim()
-
-                    if (!name)
-                        continue
-
-                    const existing = visible.find(
-                        network => network.name === name
-                    )
-
-                    if (existing) {
-                        if (inUse === "*")
-                            existing.isConnected = true
-
-                        if (Number(signal) > Number(existing.signal))
-                            existing.signal = signal
-
-                        continue
-                    }
-
-                    visible.push({
-                        name: name,
-                        signal: signal,
-                        security: security,
-                        isConnected: inUse === "*"
-                    })
-                }
-
-                const saved = []
-                const available = []
-
-                for (const network of root.savedNetworks) {
-                    const visibleNetwork = visible.find(
-                        item => item.name === network.name
-                    )
-
-                    if (!visibleNetwork)
-                        continue
-
-                    saved.push({
-                        name: network.name,
-                        signal: visibleNetwork.signal,
-                        security: visibleNetwork.security,
-                        isConnected: visibleNetwork.isConnected
-                    })
-                }
-
-                for (const network of visible) {
-                    const isSaved = root.savedNetworks.some(
-                        savedNetwork => savedNetwork.name === network.name
-                    )
-
-                    if (!isSaved)
-                        available.push(network)
-                }
-
-                root.networks = visible
-                root.savedNetworks = saved
-                root.availableNetworks = available
                 root.loading = false
             }
         }
-    }
 
-    Process {
-        id: connectProcess
-
-        onExited: {
-            root.update()
-        }
-    }
-
-    // Finds the actual wifi interface name (e.g. wlan0) since
-    // `nmcli device disconnect` requires a device, not "type wifi"
-    // which isn't valid syntax and was failing every time.
-    Process {
-        id: deviceNameProcess
-
-        command: [
-            "nmcli",
-            "-t",
-            "-f",
-            "DEVICE,TYPE",
-            "device",
-            "status"
-        ]
-
-        stdout: StdioCollector {
+        stderr: StdioCollector {
             onStreamFinished: {
-                const lines = text.trim().split("\n")
-
-                for (const line of lines) {
-                    const parts = line.split(":")
-
-                    if (parts.length < 2)
-                        continue
-
-                    if (parts[1] === "wifi") {
-                        root.wifiDevice = parts[0]
-                        break
-                    }
-                }
-
-                if (!root.wifiDevice) {
-                    root.loading = false
-                    return
-                }
-
-                disconnectProcess.command = [
-                    "nmcli",
-                    "device",
-                    "disconnect",
-                    root.wifiDevice
-                ]
-
-                disconnectProcess.running = true
+                if (text.trim().length > 0)
+                    root.lastError = text.trim()
             }
         }
     }
 
     Process {
-        id: disconnectProcess
+        id: actionProcess
 
         onExited: {
+            root.pendingNetwork = ""
+            root.pendingAction = ""
             root.update()
         }
     }
 
     function update() {
         root.loading = true
-        savedProcess.running = true
+        statusProcess.running = true
     }
 
-    // password is optional — required for a brand-new secured
-    // network that has no saved profile yet; existing saved
-    // networks connect fine without it.
+    function toggleRadio() {
+        actionProcess.command = [root.scriptPath, "radio", root.radioEnabled ? "off" : "on"]
+        actionProcess.running = true
+    }
+
+    function scan() {
+        root.loading = true
+        actionProcess.command = [root.scriptPath, "scan"]
+        actionProcess.running = true
+    }
+
     function connect(name, password) {
+        root.pendingNetwork = name
+        root.pendingAction = "connecting"
         root.loading = true
 
-        const cmd = [
-            "nmcli",
-            "device",
-            "wifi",
-            "connect",
-            name
-        ]
-
         if (password) {
-            cmd.push("password", password)
+            actionProcess.command = [root.scriptPath, "connect", name, password]
+        } else {
+            actionProcess.command = [root.scriptPath, "connect", name]
         }
 
-        connectProcess.command = cmd
-        connectProcess.running = true
+        actionProcess.running = true
     }
 
     function disconnect() {
+        const connected = root.savedNetworks.concat(root.availableNetworks).find(n => n.isConnected)
+
+        root.pendingNetwork = connected ? connected.name : ""
+        root.pendingAction = "disconnecting"
         root.loading = true
-        deviceNameProcess.running = true
+
+        actionProcess.command = [root.scriptPath, "disconnect"]
+        actionProcess.running = true
     }
 
-    Component.onCompleted: {
-        update()
-    }
+    Component.onCompleted: update()
 }

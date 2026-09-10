@@ -1,0 +1,2 @@
+singleton WifiState 1.0 WifiState.qml
+Wifi 1.0 Wifi.qml
