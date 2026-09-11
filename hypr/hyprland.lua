@@ -48,14 +48,9 @@ local menu 	  = "qs ipc call applauncher toggle"
 -- Autostart necessary processes (like notifications daemons, status bars, etc.)
 -- Or execute your favorite apps at launch like this:
 --
--- hl.on("hyprland.start", function () 
---   hl.exec_cmd(terminal)
---   hl.exec_cmd("nm-applet")
---   hl.exec_cmd("waybar & hyprpaper & firefox")
--- end)
-
 hl.on("hyprland.start", function ()
-    --hl.exec_cmd("hyprpaper")
+    hl.exec_cmd("wl-paste --type text --watch cliphist store")
+    hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("awww-daemon")
     hl.exec_cmd("sleep 1 && quickshell -p ~/.config/quickshell/shell.qml")
 end)
@@ -316,18 +311,6 @@ hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_S
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl s +5%"))
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 5%-"))
 
---hl.bind(
---    "XF86MonBrightnessUp",    
---    hl.dsp.exec_cmd("qs ipc call brightness increase"),
---    { locked = true, repeating = true }
---)
-
---hl.bind(
---    "XF86MonBrightnessDown",
---    hl.dsp.exec_cmd("qs ipc call brightness decrease"),
---    { locked = true, repeating = true }
---)
-
 -- Requires playerctl
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
@@ -361,7 +344,12 @@ hl.bind(
 -- Reload  quickshell
 hl.bind(mainMod .. " + CTRL + C", hl.dsp.exec_cmd("~/.config/quickshell/scripts/reload-quickshell.sh"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/quickshell/scripts/wallpaper_switcher.sh"))
-hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("qs ipc call clipboard toggle"))
+hl.bind(
+    mainMod .. " + SHIFT + C",
+    hl.dsp.exec_cmd(
+        [[cliphist list | rofi -dmenu -p "Clipboard" | cliphist decode | wl-copy]]
+    )
+)
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
@@ -395,14 +383,6 @@ hl.window_rule({
 
     no_focus = true,
 })
-
--- Layer rules also return a handle.
--- local overlayLayerRule = hl.layer_rule({
---     name  = "no-anim-overlay",
---     match = { namespace = "^my-overlay$" },
---     no_anim = true,
--- })
--- overlayLayerRule:set_enabled(false)
 
 -- Hyprland-run windowrule
 hl.window_rule({
