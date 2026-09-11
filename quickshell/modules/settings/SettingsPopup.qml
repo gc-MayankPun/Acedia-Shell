@@ -62,7 +62,7 @@ PanelWindow {
         Behavior on opacity {
             NumberAnimation {
                 duration: Config.Theme.animVerySlow
-                easing.type: Config.Theme.smoothEasing
+                easing.type: Config.Theme.springEasing
             }
         }
 
