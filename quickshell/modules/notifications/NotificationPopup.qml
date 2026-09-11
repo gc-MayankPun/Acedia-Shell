@@ -50,15 +50,14 @@ PanelWindow {
     Item {
         id: bar
 
-        anchors.right: parent.right
-        height: 400 
+        anchors.right: parent.right 
+        height: 400
         width: 400
-
         y: NotificationState.isNotificationPopupOpen ? 0 : -height
 
         Behavior on y {
             NumberAnimation {
-                duration: 300
+                duration: Config.Theme.animVerySlow
                 easing: Config.Theme.smoothEasing
             }
         }

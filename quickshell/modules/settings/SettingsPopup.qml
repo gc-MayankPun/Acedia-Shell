@@ -54,16 +54,21 @@ PanelWindow {
 
         anchors.verticalCenter: parent.verticalCenter
 
-        width: columnLayout.implicitWidth + 40
+        width: SettingsState.isSettingsOpen ? columnLayout.implicitWidth + 40 : 0
         height: columnLayout.implicitHeight + 70
+        anchors.right: parent.right
+        opacity: SettingsState.isSettingsOpen ? 1 : 0
 
-        x: SettingsState.isSettingsOpen
-            ? parent.width - width
-            : parent.width
-
-        Behavior on x {
+        Behavior on opacity {
             NumberAnimation {
-                duration: 300
+                duration: Config.Theme.animVerySlow
+                easing.type: Config.Theme.smoothEasing
+            }
+        }
+
+        Behavior on width {
+            NumberAnimation {
+                duration: Config.Theme.animVerySlow
                 easing.type: Config.Theme.smoothEasing
             }
         }
