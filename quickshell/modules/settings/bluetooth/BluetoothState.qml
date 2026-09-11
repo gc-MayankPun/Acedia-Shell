@@ -62,13 +62,35 @@ Item {
         }
     }
 
+    // Background refresh — keeps `powered` accurate even if it
+    // changes outside the app. Does NOT touch `loading`, so it
+    // never triggers a visible "Refreshing…" flash.
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: root.silentUpdate()
+    }
+
+    function silentUpdate() {
+        // Don't fire a new status call while one is still in
+        // flight — overlapping calls to the same Process is what
+        // was contributing to the "powered" flicker.
+        if (statusProcess.running)
+            return
+
+        statusProcess.running = true
+    }
+
     function update() {
         root.loading = true
         statusProcess.running = true
     }
 
     function togglePower() {
-        actionProcess.command = [root.scriptPath, "power", root.powered ? "off" : "on"]
+        const newState = !root.powered
+        root.powered = newState
+        actionProcess.command = [root.scriptPath, "power", newState ? "on" : "off"]
         actionProcess.running = true
     }
 

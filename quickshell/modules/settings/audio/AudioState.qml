@@ -62,14 +62,20 @@ Item {
     Process {
         id: actionProcess
 
-        onExited: root.update()
+        onExited: root.silentUpdate()
     }
 
+    // Background refresh — no visible loading flag, so it never
+    // causes the "Refreshing…" text to blink every couple seconds.
     Timer {
-        interval: 2000
+        interval: 1000
         running: true
         repeat: true
-        onTriggered: root.update()
+        onTriggered: root.silentUpdate()
+    }
+
+    function silentUpdate() {
+        statusProcess.running = true
     }
 
     function update() {
@@ -84,6 +90,7 @@ Item {
     }
 
     function toggleMute() {
+        root.muted = !root.muted
         actionProcess.command = [root.scriptPath, "mute-toggle"]
         actionProcess.running = true
     }
@@ -95,6 +102,7 @@ Item {
     }
 
     function toggleMicMute() {
+        root.micMuted = !root.micMuted
         actionProcess.command = [root.scriptPath, "mic-mute-toggle"]
         actionProcess.running = true
     }
