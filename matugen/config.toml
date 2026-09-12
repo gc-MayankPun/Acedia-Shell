@@ -1,0 +1,5 @@
+[config]
+
+[templates.rofi]
+input_path = "/home/riceuser/.config/quickshell/templates/rofi-colors.rasi"
+output_path = "/home/riceuser/.local/share/rofi/themes/matugen-colors.rasi"
