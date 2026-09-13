@@ -350,6 +350,7 @@ hl.bind(
         [[cliphist list | rofi -dmenu -p "Clipboard" | cliphist decode | wl-copy]]
     )
 )
+hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("~/.config/quickshell/scripts/media.sh toggle-popup"))
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
