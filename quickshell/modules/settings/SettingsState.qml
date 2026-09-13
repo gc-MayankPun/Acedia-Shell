@@ -1,7 +1,6 @@
 pragma Singleton
 
-import Quickshell
-import Quickshell.Hyprland
+import Quickshell 
 import QtQuick
 
 QtObject {
@@ -14,7 +13,6 @@ QtObject {
     }
 
     property int settingType: SettingType.Wifi
-
     property bool isSettingsOpen: false
 
     function toggle() {
@@ -22,13 +20,11 @@ QtObject {
     }
 
     function show() {
-        isSettingsOpen = true
-        Hyprland.dispatch("settings-blur off")
+        isSettingsOpen = true 
     }
 
     function hide() {
-        isSettingsOpen = false
-        Hyprland.dispatch("settings-blur on")
+        isSettingsOpen = false 
     }
 
     function selectSetting(type) {
