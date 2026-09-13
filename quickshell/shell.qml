@@ -5,17 +5,15 @@ import "modules/launcher" as LauncherModule
 import "modules/wallpaper" as WallpaperModule 
 import "modules/notifications" as NotificationModule
 import "modules/settings" as SettingsModule 
+import "modules/media" as MediaModule 
 
 ShellRoot {
     id: shell
 
     BarModule.Bar {}
-
     LauncherModule.AppLauncher {}
-
     WallpaperModule.Wallpaper {}
-
-    NotificationModule.Notifications {} 
-
+    NotificationModule.Notifications {}
     SettingsModule.SettingsPopup {}
+    MediaModule.MediaPopup {}
 }
