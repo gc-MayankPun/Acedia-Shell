@@ -1,9 +1,16 @@
 import Quickshell
+import Quickshell.Io
 import QtQuick
 
 import "../../config" as Config
 
 Rectangle {
+    IpcHandler {
+        target: "notification"
+
+        function toggle() { NotificationState.toggle() }
+    }
+
     anchors.verticalCenter: parent.verticalCenter
     implicitWidth: notification.width
     implicitHeight: 20

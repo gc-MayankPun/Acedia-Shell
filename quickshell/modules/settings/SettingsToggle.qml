@@ -1,10 +1,18 @@
 import Quickshell
+import Quickshell.Io
 import QtQuick
 
 import "../../config" as Config  
 
 Rectangle {
     id: root
+
+    IpcHandler {
+        target: "settings"
+
+        function toggle() { SettingsState.toggle() }
+    }
+
     anchors.verticalCenter: parent.verticalCenter
     implicitWidth: network.width
     implicitHeight: 20
