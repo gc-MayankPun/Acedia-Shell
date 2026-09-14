@@ -183,12 +183,6 @@ hl.animation({ leaf = "zoomFactor",    enabled = true,  speed = 7,    bezier = "
 --     border_size = 0,
 --     rounding    = 0,
 -- })
---hl.layer_rule({
---    match = {
---        namespace = "quickshell-wallpaper",
---    },
---    blur = true,
---})
 
 -- See https://wiki.hypr.land/Configuring/Layouts/Dwindle-Layout/ for more
 hl.config({
@@ -267,10 +261,10 @@ hl.device({
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
-hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
-local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
+hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal))
+local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
@@ -307,7 +301,6 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
 hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
-hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl s +5%"))
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 5%-"))
 
@@ -317,7 +310,11 @@ hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
--- Misc keybinds
+
+--------------------------------
+-------- MISC KEYBINDS ---------
+-------------------------------- 
+
 -- Screenshot entire screen
 hl.bind(
     mainMod .. " + PRINT",
@@ -341,16 +338,41 @@ hl.bind(
     )
 )
 
--- Reload  quickshell
-hl.bind(mainMod .. " + CTRL + C", hl.dsp.exec_cmd("~/.config/quickshell/scripts/reload-quickshell.sh"))
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/quickshell/scripts/wallpaper_switcher.sh"))
+-- Open Clipboard Manager
 hl.bind(
     mainMod .. " + SHIFT + C",
     hl.dsp.exec_cmd(
         [[cliphist list | rofi -dmenu -p "Clipboard" | cliphist decode | wl-copy]]
     )
 )
-hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("~/.config/quickshell/scripts/media.sh toggle-popup"))
+
+-- Toggle Fullscreen and Maximize
+hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen("maximized", "toggle"))
+hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))   
+
+-- Clear clipboard history
+hl.bind(mainMod .. " + CTRL + DELETE", hl.dsp.exec_cmd("cliphist wipe && notify-send 'Clipboard' 'History cleared 🧹'"))
+
+
+--------------------------------
+----- QUICKSHELL KEYBINDS ------
+--------------------------------
+
+-- Reload Quickshell
+hl.bind(mainMod .. " + CTRL + R", hl.dsp.exec_cmd("~/.config/quickshell/scripts/reload-quickshell.sh"))
+
+-- Switch Wallpapers
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/quickshell/scripts/wallpaper_switcher.sh"))
+
+-- Toggle Media Popup
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("~/.config/quickshell/scripts/media.sh toggle-popup"))
+
+-- Toggle Notification Center
+hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("quickshell ipc call notification toggle"))
+
+-- Toggle Settings 
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("quickshell ipc call settings toggle"))
+
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
