@@ -60,7 +60,7 @@ PanelWindow {
 
         leftWidth: workspaces.width
         centerWidth: clock.width
-        rightWidth: battery.width
+        rightWidth: rightBar.width
 
         notchHeight: Config.Theme.notchHeight
         radius: 20
