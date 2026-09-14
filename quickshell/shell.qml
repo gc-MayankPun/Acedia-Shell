@@ -6,6 +6,7 @@ import "modules/wallpaper" as WallpaperModule
 import "modules/notifications" as NotificationModule
 import "modules/settings" as SettingsModule 
 import "modules/media" as MediaModule 
+import "modules/osd" as OSDModule
 
 ShellRoot {
     id: shell
@@ -16,4 +17,5 @@ ShellRoot {
     NotificationModule.Notifications {}
     SettingsModule.SettingsPopup {}
     MediaModule.MediaPopup {}
+    OSDModule.VolumeOSD {}
 }
