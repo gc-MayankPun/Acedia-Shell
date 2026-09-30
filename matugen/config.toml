@@ -3,3 +3,7 @@
 [templates.rofi]
 input_path = "~/.config/quickshell/templates/rofi-colors.rasi"
 output_path = "~/.local/share/rofi/themes/matugen-colors.rasi"
+
+[templates.zsh]
+input_path = "~/.config/matugen/templates/zsh-colors.zsh"
+output_path = "~/.cache/acedia/matugen-colors.zsh"
