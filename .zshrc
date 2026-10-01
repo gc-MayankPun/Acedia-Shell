@@ -51,3 +51,4 @@ cd() {
 # Execute on Startup
 # ==============================================================================
 fastfetch
+kotofetch --width 80 --border false --centered true --quote-color red --translation-color white
