@@ -353,6 +353,11 @@ hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "maximized"
 -- Clear clipboard history
 hl.bind(mainMod .. " + CTRL + DELETE", hl.dsp.exec_cmd("cliphist wipe && notify-send 'Clipboard' 'History cleared 🧹'"))
 
+-- Launch hyprlock
+hl.bind(
+    mainMod .. " + L",
+    hl.dsp.exec_cmd("hyprlock -c ~/.config/hyprlock/hyprlock.conf")
+)
 
 --------------------------------
 ----- QUICKSHELL KEYBINDS ------
