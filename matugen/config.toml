@@ -4,6 +4,7 @@
 input_path = "~/.config/quickshell/templates/rofi-colors.rasi"
 output_path = "~/.local/share/rofi/themes/matugen-colors.rasi"
 
-[templates.zsh]
-input_path = "~/.config/matugen/templates/zsh-colors.zsh"
-output_path = "~/.cache/acedia/matugen-colors.zsh"
+[templates.kitty]
+input_path = "~/.config/matugen/templates/kitty-colors.conf"
+output_path = "~/.config/kitty/matugen-colors.conf"
+post_hook = "pkill -USR1 kitty"

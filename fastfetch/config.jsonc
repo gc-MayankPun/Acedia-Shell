@@ -3,8 +3,8 @@
   "logo": {
     "type": "auto", 
     "source": "\"$(~/.config/fastfetch/random_logo.sh)\"",  
-    "height": 25,
-    "width": 50,
+    "height": 20,
+    "width": 40,
     "padding": {
       "top": 1,
       "left": 5,
@@ -12,7 +12,8 @@
     }
   },
   "display": {
-    "separator": ""
+    "separator": "",
+    "color": { "keys": "blue", "title": "magenta", "output": "white" }
   },
   "modules": [
     {
@@ -21,36 +22,8 @@
     },
     {
       "type": "custom",
-      "format": "╭─────────────────────── Hardware ───────────────────────╮"
-    }, 
-    {
-      "type": "host",
-      "key": "  PC: ",
-      "format": "{1}"
+      "format": " "
     },
-    {
-      "type": "cpu",
-      "format": "{1} @ {7}",
-      "key": "   "
-    },
-    {
-      "type": "gpu",
-      "format": "{1} {2}",
-      "key": "  󰢮 "
-    }, 
-    {
-      "type": "memory",
-      "key": "  󰘚 "
-    },
-    {
-      "type": "disk",
-      "key": "  󰋊 "
-    },
-    {
-      "type": "custom",
-      "format": "╰────────────────────────────────────────────────────────╯"
-    }, 
-    "break",
     {
       "type": "custom",
       "format": "╭────────────────────── Software ────────────────────────╮"
@@ -58,7 +31,7 @@
     {
       "type": "os",
       "key": "   ",
-      "format": "{1}"
+      "format": "{2}"
     },
     {
       "type": "kernel",
@@ -119,27 +92,6 @@
       "type": "colors",
       "paddingLeft": 2,
       "symbol": "circle"
-    },
-    {
-      "type": "custom",
-      "format": " "
-    },
-    {
-      "type": "custom",
-      "format": " "
-    },
-    {
-      "type": "command",
-      "text": "kotofetch --width 80 --border false --centered true --quote-color red --translation-color white",
-      "key": " "
-    },
-    {
-      "type": "custom",
-      "format": " "
-    },
-    {
-      "type": "custom",
-      "format": " "
     }
   ]
 }
