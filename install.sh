@@ -21,7 +21,7 @@ QUICKSHELL_SOURCE="$SCRIPT_DIR/quickshell"
 MATUGEN_SOURCE="$SCRIPT_DIR/matugen/config.toml"
 ROFI_THEME_SOURCE="$SCRIPT_DIR/matugen/theme/Acedia.rasi"
 ZSH_SOURCE="$SCRIPT_DIR/.zshrc"
-
+HYPRLOCK_SOURCE="$SCRIPT_DIR/hyprlock"
 
 # ==============================================================================
 # Destinations
@@ -31,6 +31,7 @@ HYPR_CONFIG="$CONFIG_DIR/hypr"
 QUICKSHELL_CONFIG="$CONFIG_DIR/quickshell"
 MATUGEN_CONFIG="$CONFIG_DIR/matugen"
 ZSH_CONFIG="$HOME/.zshrc"
+HYPRLOCK_CONFIG="$CONFIG_DIR/hyprlock"
 
 
 # ==============================================================================
@@ -90,6 +91,22 @@ fi
 cp -a "$HYPR_SOURCE" "$CONFIG_DIR/"
 
 echo "Hyprland configuration applied."
+echo
+
+
+# ==============================================================================
+# Hyprlock
+# ==============================================================================
+
+echo "Applying Hyprlock configuration..."
+
+if [[ -d "$HYPRLOCK_CONFIG" ]]; then
+    backup_config "$HYPRLOCK_CONFIG"
+fi
+
+cp -a "$HYPRLOCK_SOURCE" "$CONFIG_DIR/"
+
+echo "Hyprlock configuration applied."
 echo
 
 
