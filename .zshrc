@@ -1,39 +1,34 @@
 # ==============================================================================
-# Oh My Zsh
+# Oh My Zsh & Plugins Setup
 # ==============================================================================
-
 export ZSH="$HOME/.oh-my-zsh"
-export ZSH_CUSTOM="$ZSH/custom"
+ZSH_THEME="robbyrussell"
+ZSH_CUSTOM="$ZSH/custom"
 
-ZSH_THEME=""
-
-plugins=(
-    git
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-)
-
-if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
-    source "$ZSH/oh-my-zsh.sh"
+# Install Oh-My-Zsh if it doesn't exist
+if [ ! -d "$ZSH" ]; then
+  echo "Installing Oh-My-Zsh..."
+  git clone https://github.com/ohmyzsh/ohmyzsh.git "$ZSH" >/dev/null 2>&1
 fi
 
-
-# ==============================================================================
-# Matugen
-# ==============================================================================
-
-export ACEDIA_CACHE="$HOME/.cache/acedia"
-export ACEDIA_COLORS="$ACEDIA_CACHE/matugen-colors.zsh"
-
-if [[ -r "$ACEDIA_COLORS" ]]; then
-    source "$ACEDIA_COLORS"
+# Auto-fetch necessary plugins if they don't exist
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
+  echo "Installing zsh-autosuggestions..."
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions" >/dev/null 2>&1
 fi
 
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
+  echo "Installing zsh-syntax-highlighting..."
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" >/dev/null 2>&1
+fi
+
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+
+source $ZSH/oh-my-zsh.sh
 
 # ==============================================================================
-# History
+# History Configuration
 # ==============================================================================
-
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000
 SAVEHIST=10000
@@ -43,38 +38,16 @@ setopt APPEND_HISTORY
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
-
 # ==============================================================================
-# Shell Behaviour
+# Custom Functions
 # ==============================================================================
 
+# Automatically list directory contents upon changing directories
 cd() {
-    builtin cd "$@" && ls
+  builtin cd "$@" && ls
 }
 
-
 # ==============================================================================
-# Prompt
+# Execute on Startup
 # ==============================================================================
-
-if [[ -n "$ACEDIA_COLOR_PRIMARY" ]]; then
-
-    PROMPT='%F{$ACEDIA_COLOR_PRIMARY}╭─%f %F{$ACEDIA_COLOR_TEXT}%~%f
-%F{$ACEDIA_COLOR_PRIMARY}╰─❯%f '
-
-else
-
-    PROMPT='%F{cyan}╭─%f %~%f
-%F{cyan}╰─❯%f '
-
-fi
-
-# ==============================================================================
-# Startup
-# ==============================================================================
-# fastfetch
-kotofetch \
-    --width 80 \
-    --centered true \
-    --quote-color "$ACEDIA_COLOR_PRIMARY" \
-    --translation-color "$ACEDIA_COLOR_TEXT"
+fastfetch
