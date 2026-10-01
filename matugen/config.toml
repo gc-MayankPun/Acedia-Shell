@@ -8,3 +8,11 @@ output_path = "~/.local/share/rofi/themes/matugen-colors.rasi"
 input_path = "~/.config/matugen/templates/kitty-colors.conf"
 output_path = "~/.config/kitty/matugen-colors.conf"
 post_hook = "pkill -USR1 kitty"
+
+[config.custom_colors]
+red     = "#f38ba8"
+green   = "#a6e3a1"
+yellow  = "#f9e2af"
+blue    = "#89b4fa"
+magenta = "#cba6f7"
+cyan    = "#94e2d5"
