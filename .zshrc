@@ -55,4 +55,5 @@ _matugen_color() { awk -v key="$1" '$1 == key { print $2; exit }' ~/.config/kitt
 
 kotofetch --width 80 --border false --centered true \
   --quote-color "$(_matugen_color color4)" \
-  --translation-color "$(_matugen_color color7)"
+  --translation-color "$(_matugen_color color7)" \
+  --animation slide 
