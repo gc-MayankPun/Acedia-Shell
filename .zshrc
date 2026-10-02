@@ -51,4 +51,8 @@ cd() {
 # Execute on Startup
 # ==============================================================================
 fastfetch
-kotofetch --width 80 --border false --centered true --quote-color red --translation-color white
+_matugen_color() { awk -v key="$1" '$1 == key { print $2; exit }' ~/.config/kitty/matugen-colors.conf 2>/dev/null }
+
+kotofetch --width 80 --border false --centered true \
+  --quote-color "$(_matugen_color color4)" \
+  --translation-color "$(_matugen_color color7)"
