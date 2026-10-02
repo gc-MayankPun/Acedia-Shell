@@ -378,6 +378,10 @@ hl.bind(
     hl.dsp.exec_cmd("hyprlock -c ~/.config/hyprlock/hyprlock.conf")
 )
 
+-- Emoji picker
+hl.bind(mainMod .. " + period", hl.dsp.exec_cmd("pkill -x hypremoji || hypremoji"))
+
+
 --------------------------------
 ----- QUICKSHELL KEYBINDS ------
 --------------------------------
@@ -438,4 +442,13 @@ hl.window_rule({
 
     move  = "20 monitor_h-120",
     float = true,
+})
+
+-- Float and center the picker instead of tiling it
+hl.window_rule({
+    name  = "float-hypremoji",
+    match = { class = "(?i).*hypremoji.*" },
+
+    float  = true,
+    center = true,
 })
