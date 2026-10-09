@@ -1,149 +1,147 @@
-# Matugen
+# Acedia-Shell
 
-Matugen generates dynamic colors from your current wallpaper and applies them to different applications.
+**A personal Arch Linux desktop environment built around Hyprland, QuickShell, and a cohesive, wallpaper-driven aesthetic.**
 
-## Structure
+Acedia embraces the art of sloth: a desktop that feels effortless, stays out of the way, and makes everyday interactions feel natural.
 
-```text
-~/.config/matugen/
-├── config.toml
-└── templates/
-    └── ...
-```
+## Preview
 
-> The `.rasi` files are **templates**, while `config.toml` tells Matugen how and where to generate the output.
+Take a look at Acedia-Shell in action.
+
+<!-- Replace this comment with the video URL uploaded to GitHub. -->
+
+## Features
+
+- **Hyprland**: Wayland compositor and desktop configuration.
+- **QuickShell**: Custom shell components, desktop bar, launcher, wallpaper interface, and notifications.
+- **Hyprlock**: Minimal lock screen with a profile image, date, time, password input, and power actions.
+- **Matugen**: Generates application colors from your wallpaper.
+- **Rofi**: Application launcher and themed interfaces.
+- **Zsh**: Customized shell prompt and startup experience.
+- **Automatic backups**: The installer backs up existing configurations before replacing them.
+
+## Requirements
+
+Acedia-Shell is designed for **Arch Linux or an Arch-based distribution** running a Wayland session.
+
+### Core packages
+
+| Package | Purpose |
+|---|---|
+| `hyprland` | Wayland compositor |
+| `quickshell-git` | Custom desktop shell and notification service |
+| `hyprlock` | Screen locker |
+| `matugen` | Wallpaper-based color generation |
+| `rofi` | Application launcher and theme |
+| `zsh` | Interactive shell |
+| `kitty` | Terminal emulator |
+| `fastfetch` | System information display |
+| `git` | Clone and manage the repository |
+
+Some packages may come from the AUR rather than the official Arch repositories. In particular, Acedia-Shell was developed with `quickshell-git`.
+
+### Fonts
+
+The configuration uses **JetBrainsMono Nerd Font**. Install it to ensure the interface and terminal prompt render as intended.
+
+### Additional dependencies
+
+Some features may depend on additional utilities referenced by your local configuration, such as wallpaper tools, screenshot utilities, clipboard helpers, or scripts.
+
+Check the commands used by the files in `hypr/`, `quickshell/`, and `.zshrc` before installing on a fresh system. Dependencies can change as the project evolves.
 
 ## Installation
 
-Create the Matugen configuration directory:
+### 1. Install the dependencies
+
+Install the core packages and any additional utilities required by your configuration.
+
+For example, packages available in the official repositories can be installed with:
 
 ```bash
-mkdir -p ~/.config/matugen
+sudo pacman -S hyprland hyprlock matugen rofi zsh kitty fastfetch git
 ```
 
-### 1. `config.toml`
+Install `quickshell-git` separately using your preferred AUR helper.
 
-Place the Matugen configuration file here:
+> Review the package list against your current configuration before running the installer. This repository configures your desktop; it does not automatically install every system dependency.
+
+### 2. Clone the repository
+
+```bash
+git clone https://github.com/gc-MayankPun/Acedia-Shell.git
+cd Acedia-Shell
+```
+
+### 3. Run the installer
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+The installer applies the configurations and backs up existing Hyprland, Hyprlock, QuickShell, and Zsh configurations before replacing them.
+
+**Backups:** Existing configuration directories and `.zshrc` are renamed with a timestamp suffix, such as `hypr_bak_20261010_012600`.
+
+Review `install.sh` before running it so you know which files will be replaced.
+
+### 4. Start using the configuration
+
+Log into your Hyprland session and follow the keybindings and startup behavior defined in the installed configuration.
+
+If a component does not start, launch it manually from a terminal to inspect its error output.
+
+## Repository structure
+
+```text
+Acedia-Shell/
+├── hypr/                  # Hyprland configuration
+├── hyprlock/              # Screen locker configuration
+├── quickshell/            # Desktop shell and UI modules
+├── matugen/
+│   ├── config.toml        # Matugen template configuration
+│   └── theme/
+│       └── Acedia.rasi    # Rofi theme
+├── .zshrc                 # Zsh configuration
+└── install.sh             # Configuration installer
+```
+
+The QuickShell directory contains the shell entry point, reusable components, feature modules, configuration, and supporting scripts.
+
+## Dynamic theming
+
+Matugen generates colors from an image and writes them to configured application files.
+
+Generate a palette from a wallpaper:
+
+```bash
+matugen image ~/Pictures/Wallpapers/wallpaper.jpg
+```
+
+Matugen processes the templates configured in `matugen/config.toml`. Generated colors can be used by applications such as Rofi and other integrations configured on your system.
+
+The Rofi theme included in this repository is installed to:
+
+```text
+~/.local/share/rofi/themes/Acedia.rasi
+```
+
+The installer copies the Matugen configuration to:
 
 ```text
 ~/.config/matugen/config.toml
 ```
 
-Example:
+Keep source templates separate from generated output. Generated files may be overwritten whenever Matugen runs.
 
-```text
-~/.config/matugen/
-└── config.toml
-```
+## Configuration and customization
 
-Matugen automatically looks for its configuration here.
+- **Hyprland:** Edit files under `hypr/`.
+- **Hyprlock:** Edit `hyprlock/hyprlock.conf`.
+- **QuickShell:** Customize components and feature modules under `quickshell/`.
+- **Matugen:** Adjust `matugen/config.toml` and its templates.
+- **Rofi:** Customize `matugen/theme/Acedia.rasi`.
+- **Zsh:** Customize `.zshrc`.
 
----
-
-### 2. Rofi `.rasi` templates
-
-Place your Rofi templates inside:
-
-```text
-~/.config/matugen/templates/
-```
-
-For example:
-
-```text
-~/.config/matugen/
-├── config.toml
-└── templates/
-    ├── config.rasi
-    └── clipboard.rasi
-```
-
-The `.rasi` files are templates that Matugen uses when generating your Rofi theme.
-
-## Configuring the Rofi template
-
-Your `config.toml` should reference the Rofi template.
-
-For example:
-
-```toml
-[templates.rofi]
-input_path = '~/.config/matugen/templates/config.rasi'
-output_path = '~/.config/rofi/themes/matugen.rasi'
-```
-
-Then Matugen generates:
-
-```text
-~/.config/rofi/themes/matugen.rasi
-```
-
-Do **not** manually edit the generated `.rasi` file because Matugen will overwrite it the next time the theme is generated.
-
-## Recommended structure
-
-A complete setup could look like:
-
-```text
-~/.config/
-├── matugen/
-│   ├── config.toml
-│   └── templates/
-│       ├── rofi.rasi
-│       └── clipboard.rasi
-│
-└── rofi/
-    ├── config.rasi
-    └── themes/
-        └── matugen.rasi
-```
-
-### Templates vs generated files
-
-| File               | Location                       | Purpose               |
-| ------------------ | ------------------------------ | --------------------- |
-| `config.toml`      | `~/.config/matugen/`           | Matugen configuration |
-| `*.rasi` template  | `~/.config/matugen/templates/` | Source template       |
-| Generated `*.rasi` | `~/.config/rofi/themes/`       | Actual Rofi theme     |
-
-## Generating the theme
-
-Run:
-
-```bash
-matugen image ~/path/to/wallpaper.jpg
-```
-
-Matugen will generate the configured files from the templates.
-
-## Important
-
-Keep your **source templates** inside Matugen:
-
-```text
-~/.config/matugen/templates/
-```
-
-Keep **generated application files** inside the application's configuration directory:
-
-```text
-~/.config/rofi/
-```
-
-This keeps the setup clean:
-
-```text
-Matugen
-   │
-   ├── config.toml
-   │
-   └── templates
-          │
-          ▼
-       generated
-          │
-          ▼
-      Rofi config
-```
-
-If you are putting this setup in a dotfiles repository, commit the Matugen templates and `config.toml`, but treat generated files as generated output unless you specifically want to version them.
+After changing a configuration, reload or restart the relevant application when necessary.
