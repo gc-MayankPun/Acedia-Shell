@@ -8,7 +8,11 @@ Acedia embraces the art of sloth: a desktop that feels effortless, stays out of 
 
 Take a look at Acedia-Shell in action.
 
-<!-- Replace this comment with the video URL uploaded to GitHub. -->
+
+
+https://github.com/user-attachments/assets/70e3cc10-dff8-4af4-8046-79653adf5496
+
+
 
 ## Features
 
